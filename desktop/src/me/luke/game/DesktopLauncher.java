@@ -2,7 +2,6 @@ package me.luke.game;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import me.luke.game.MyGdxGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -12,6 +11,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("Dungeon Game");
 		config.setWindowIcon("drop.png");
-		new Lwjgl3Application(new MyGdxGame(), config);
+		new Lwjgl3Application(new Drop(), config);
 	}
 }
