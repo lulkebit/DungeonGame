@@ -11,6 +11,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Drop;
 import me.luke.game.Dungeon;
+import me.luke.game.entities.Bullet;
+import me.luke.game.enums.Direction;
 
 import java.util.Iterator;
 
@@ -18,13 +20,14 @@ public class DungeonGameScreen implements Screen {
     private final Dungeon game;
     private final OrthographicCamera camera;
     private static long lastBulletTime;
+    private static Direction currentDirection = Direction.RIGHT;
 
     private final Texture bgTexture;
     private final Texture playerTexture;
     private final Texture bulletTexture;
 
     private static Rectangle player;
-    private static Array<Rectangle> bullets;
+    private static Array<Bullet> bullets;
 
     public DungeonGameScreen(final Dungeon game) {
         this.game = game;
@@ -54,39 +57,63 @@ public class DungeonGameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.batch.draw(playerTexture, player.x, player.y);
-        for(Rectangle bullet : bullets) {
+        for(Bullet bullet : bullets) {
             game.batch.draw(bulletTexture, bullet.x, bullet.y);
         }
         game.batch.end();
 
-        if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP))
+        if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
             player.y += 350 * Gdx.graphics.getDeltaTime();
+            currentDirection = Direction.UP;
+        }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN))
+        if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
             player.y -= 350 * Gdx.graphics.getDeltaTime();
+            currentDirection = Direction.DOWN;
+        }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT))
+        if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             player.x -= 350 * Gdx.graphics.getDeltaTime();
+            currentDirection = Direction.LEFT;
+        }
 
-        if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+        if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             player.x += 350 * Gdx.graphics.getDeltaTime();
+            currentDirection = Direction.RIGHT;
+        }
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
             spawnBullet();
 
-        for (Iterator<Rectangle> iter = bullets.iterator(); iter.hasNext(); ) {
-            Rectangle bullet = iter.next();
-            bullet.x += 200 * Gdx.graphics.getDeltaTime();
+        for (Iterator<Bullet> iter = bullets.iterator(); iter.hasNext(); ) {
+            Bullet bullet = iter.next();
 
-            if(bullet.x + 12 > 1920) {
+            switch (bullet.getDirection()) {
+                case UP:
+                    bullet.y += 200 * Gdx.graphics.getDeltaTime();
+                    break;
+
+                case DOWN:
+                    bullet.y -= 200 * Gdx.graphics.getDeltaTime();
+                    break;
+
+                case RIGHT:
+                    bullet.x += 200 * Gdx.graphics.getDeltaTime();
+                    break;
+
+                case LEFT:
+                    bullet.x -= 200 * Gdx.graphics.getDeltaTime();
+                    break;
+            }
+
+            if(!(bullet.y + 12 < 1080) || !(bullet.y + 12 > 0) || !(bullet.x + 12 < 1920) || !(bullet.x + 12 > 0)) {
                 iter.remove();
-                System.out.println("Removed");
             }
         }
     }
 
     private static void spawnBullet() {
-        Rectangle bullet = new Rectangle();
+        Bullet bullet = new Bullet(currentDirection);
         bullet.x = player.x + player.getWidth() / 2;
         bullet.y = player.y + player.getHeight() / 2;
         bullet.width = 12;
@@ -100,6 +127,7 @@ public class DungeonGameScreen implements Screen {
         game.dispose();
         playerTexture.dispose();
         bgTexture.dispose();
+        bulletTexture.dispose();
     }
 
     @Override
