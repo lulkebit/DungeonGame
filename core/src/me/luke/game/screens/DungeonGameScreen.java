@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.Bullet;
+import me.luke.game.entities.Enemy;
 import me.luke.game.enums.Direction;
 
 import java.util.Iterator;
@@ -32,8 +33,10 @@ public class DungeonGameScreen implements Screen {
     private final Texture bulletLeftTexture;
     private final Texture bulletUpTexture;
     private final Texture bulletDownTexture;
+    private final Texture enemyTexture;
 
     private static Rectangle player;
+    private static Enemy enemy;
     private static Array<Bullet> bullets;
 
     public DungeonGameScreen(final Dungeon game) {
@@ -49,6 +52,7 @@ public class DungeonGameScreen implements Screen {
         bulletLeftTexture = new Texture("bulletLeft.png");
         bulletUpTexture = new Texture("bulletUp.png");
         bulletDownTexture = new Texture("bulletDown.png");
+        enemyTexture = new Texture("playerRight.png");
 
         player = new Rectangle();
         player.x = (float) 1920 / 2 - (float) 64 / 2;
@@ -57,6 +61,8 @@ public class DungeonGameScreen implements Screen {
         player.height = 64;
 
         bullets = new Array<>();
+
+        enemy = new Enemy(1920f / 2f, 1080f / 2f, 64f, 64f, 150);
     }
 
     @Override
@@ -67,6 +73,8 @@ public class DungeonGameScreen implements Screen {
 
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
 
         if(previousDirection == Direction.RIGHT || currentDirection == Direction.RIGHT || currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT) {
             game.batch.draw(playerRightTexture, player.x, player.y);
@@ -100,6 +108,7 @@ public class DungeonGameScreen implements Screen {
 
     private static void gameLoop() {
         playerMovement();
+        enemy.move(player);
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
             spawnBullet();
@@ -127,6 +136,11 @@ public class DungeonGameScreen implements Screen {
 
             if(!(bullet.y + 12 < 1080) || !(bullet.y + 12 > 0) || !(bullet.x + 12 < 1920) || !(bullet.x + 12 > 0)) {
                 iter.remove();
+            }
+
+            if(bullet.overlaps(enemy)) {
+                iter.remove();
+                // enemy.setX(0);
             }
         }
     }
@@ -220,6 +234,7 @@ public class DungeonGameScreen implements Screen {
         bulletLeftTexture.dispose();
         bulletUpTexture.dispose();
         bulletDownTexture.dispose();
+        enemyTexture.dispose();
     }
 
     @Override
