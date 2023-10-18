@@ -5,6 +5,14 @@
 *.ear
 hs_err_pid*
 
+gradle
+gradle.properties
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+.gradle
+
 ## Robovm
 /ios/robovm-build/
 
