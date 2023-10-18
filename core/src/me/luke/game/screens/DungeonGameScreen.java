@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.Bullet;
 import me.luke.game.entities.Enemy;
+import me.luke.game.entities.Spawner;
 import me.luke.game.enums.Direction;
 
 import java.util.Iterator;
@@ -36,8 +37,8 @@ public class DungeonGameScreen implements Screen {
     private final Texture enemyTexture;
 
     private static Rectangle player;
-    private static Enemy enemy;
     private static Array<Bullet> bullets;
+    private static Spawner spawner;
 
     public DungeonGameScreen(final Dungeon game) {
         this.game = game;
@@ -62,7 +63,9 @@ public class DungeonGameScreen implements Screen {
 
         bullets = new Array<>();
 
-        enemy = new Enemy(1920f / 2f, 1080f / 2f, 64f, 64f, 150);
+        spawner = new Spawner();
+
+        // enemy = new Enemy(1920f / 2f, 1080f / 2f, 64f, 64f, 150);
     }
 
     @Override
@@ -74,7 +77,7 @@ public class DungeonGameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
+        // game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
 
         if(previousDirection == Direction.RIGHT || currentDirection == Direction.RIGHT || currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT) {
             game.batch.draw(playerRightTexture, player.x, player.y);
@@ -101,6 +104,10 @@ public class DungeonGameScreen implements Screen {
                     break;
             }
         }
+
+        for(Rectangle enemy: spawner.getEnemies()) {
+            game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
+        }
         game.batch.end();
 
         gameLoop();
@@ -108,10 +115,12 @@ public class DungeonGameScreen implements Screen {
 
     private static void gameLoop() {
         playerMovement();
-        enemy.move(player);
+        spawner.spawnerLoop(player);
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
             spawnBullet();
+        if(TimeUtils.nanoTime() - spawner.getLastSpawnTime() > 1000000000)
+            spawner.spawnEnemy();
 
         for (Iterator<Bullet> iter = bullets.iterator(); iter.hasNext(); ) {
             Bullet bullet = iter.next();
@@ -137,10 +146,17 @@ public class DungeonGameScreen implements Screen {
             if(!(bullet.y + 12 < 1080) || !(bullet.y + 12 > 0) || !(bullet.x + 12 < 1920) || !(bullet.x + 12 > 0)) {
                 iter.remove();
             }
+            hitCheck(spawner.getEnemies(), bullet);
+        }
+    }
+
+    private static void hitCheck(Array<Enemy> enemies, Bullet bullet) {
+        for (Iterator<Enemy> iter = enemies.iterator(); iter.hasNext(); ) {
+            Enemy enemy = iter.next();
 
             if(bullet.overlaps(enemy)) {
                 iter.remove();
-                // enemy.setX(0);
+                bullets.removeIndex(bullets.indexOf(bullet, true));
             }
         }
     }
