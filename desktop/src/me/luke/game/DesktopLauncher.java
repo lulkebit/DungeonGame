@@ -8,9 +8,10 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setWindowedMode(1920, 1080);
 		config.useVsync(true);
+		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		config.setForegroundFPS(60);
 		config.setTitle("Dungeon Game");
-		config.setWindowIcon("player.png");
+		config.setWindowIcon("playerRight.png");
 		new Lwjgl3Application(new Dungeon(), config);
 	}
 }

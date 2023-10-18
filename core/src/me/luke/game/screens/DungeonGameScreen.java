@@ -9,7 +9,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
-import me.luke.game.Drop;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.Bullet;
 import me.luke.game.enums.Direction;
@@ -19,12 +18,20 @@ import java.util.Iterator;
 public class DungeonGameScreen implements Screen {
     private final Dungeon game;
     private final OrthographicCamera camera;
-    private static long lastBulletTime;
     private static Direction currentDirection = Direction.RIGHT;
+    private static Direction previousDirection = Direction.RIGHT;
+
+    private static long lastBulletTime;
+    private static final int bulletSpeed = 400;
+    private static final int playerSpeed = 350;
 
     private final Texture bgTexture;
-    private final Texture playerTexture;
-    private final Texture bulletTexture;
+    private final Texture playerRightTexture;
+    private final Texture playerLeftTexture;
+    private final Texture bulletRightTexture;
+    private final Texture bulletLeftTexture;
+    private final Texture bulletUpTexture;
+    private final Texture bulletDownTexture;
 
     private static Rectangle player;
     private static Array<Bullet> bullets;
@@ -36,8 +43,12 @@ public class DungeonGameScreen implements Screen {
         camera.setToOrtho(false, 1920, 1080);
 
         bgTexture = new Texture("background.png");
-        playerTexture = new Texture("player.png");
-        bulletTexture = new Texture("bullet.png");
+        playerRightTexture = new Texture("playerRight.png");
+        playerLeftTexture = new Texture("playerLeft.png");
+        bulletRightTexture = new Texture("bulletRight.png");
+        bulletLeftTexture = new Texture("bulletLeft.png");
+        bulletUpTexture = new Texture("bulletUp.png");
+        bulletDownTexture = new Texture("bulletDown.png");
 
         player = new Rectangle();
         player.x = (float) 1920 / 2 - (float) 64 / 2;
@@ -56,30 +67,81 @@ public class DungeonGameScreen implements Screen {
 
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        game.batch.draw(playerTexture, player.x, player.y);
+
+        if(previousDirection == Direction.RIGHT || currentDirection == Direction.RIGHT || currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT) {
+            game.batch.draw(playerRightTexture, player.x, player.y);
+        } else if (previousDirection == Direction.LEFT || currentDirection == Direction.LEFT || currentDirection == Direction.TOPLEFT || currentDirection == Direction.DOWNLEFT) {
+            game.batch.draw(playerLeftTexture, player.x, player.y);
+        }
+
         for(Bullet bullet : bullets) {
-            game.batch.draw(bulletTexture, bullet.x, bullet.y);
+            switch (bullet.getDirection()) {
+                case UP:
+                    game.batch.draw(bulletUpTexture, bullet.x, bullet.y);
+                    break;
+
+                case DOWN:
+                    game.batch.draw(bulletDownTexture, bullet.x, bullet.y);
+                    break;
+
+                case RIGHT:
+                    game.batch.draw(bulletRightTexture, bullet.x, bullet.y);
+                    break;
+
+                case LEFT:
+                    game.batch.draw(bulletLeftTexture, bullet.x, bullet.y);
+                    break;
+            }
         }
         game.batch.end();
 
-        if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.y += 350 * Gdx.graphics.getDeltaTime();
-            currentDirection = Direction.UP;
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.y -= 350 * Gdx.graphics.getDeltaTime();
-            currentDirection = Direction.DOWN;
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            player.x -= 350 * Gdx.graphics.getDeltaTime();
-            currentDirection = Direction.LEFT;
-        }
-
-        if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.x += 350 * Gdx.graphics.getDeltaTime();
-            currentDirection = Direction.RIGHT;
+        if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) ||
+            (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+        ) {
+            previousDirection = Direction.RIGHT;
+            currentDirection = Direction.TOPRIGHT;
+            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+        } else if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) ||
+                (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
+        ) {
+            previousDirection = Direction.LEFT;
+            currentDirection = Direction.TOPLEFT;
+            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D) ||
+                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+        ) {
+            previousDirection = Direction.RIGHT;
+            currentDirection = Direction.DOWNRIGHT;
+            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A) ||
+                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
+        ) {
+            previousDirection = Direction.LEFT;
+            currentDirection = Direction.DOWNLEFT;
+            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+        } else {
+            if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                previousDirection = currentDirection;
+                currentDirection = Direction.LEFT;
+                player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                previousDirection = currentDirection;
+                currentDirection = Direction.RIGHT;
+                player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                currentDirection = Direction.UP;
+                player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                currentDirection = Direction.DOWN;
+                player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+            }
         }
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
@@ -90,19 +152,19 @@ public class DungeonGameScreen implements Screen {
 
             switch (bullet.getDirection()) {
                 case UP:
-                    bullet.y += 200 * Gdx.graphics.getDeltaTime();
+                    bullet.y += bulletSpeed * Gdx.graphics.getDeltaTime();
                     break;
 
                 case DOWN:
-                    bullet.y -= 200 * Gdx.graphics.getDeltaTime();
+                    bullet.y -= bulletSpeed * Gdx.graphics.getDeltaTime();
                     break;
 
                 case RIGHT:
-                    bullet.x += 200 * Gdx.graphics.getDeltaTime();
+                    bullet.x += bulletSpeed * Gdx.graphics.getDeltaTime();
                     break;
 
                 case LEFT:
-                    bullet.x -= 200 * Gdx.graphics.getDeltaTime();
+                    bullet.x -= bulletSpeed * Gdx.graphics.getDeltaTime();
                     break;
             }
 
@@ -113,7 +175,15 @@ public class DungeonGameScreen implements Screen {
     }
 
     private static void spawnBullet() {
-        Bullet bullet = new Bullet(currentDirection);
+        Direction dir;
+        if(currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT)
+            dir = Direction.RIGHT;
+        else if(currentDirection == Direction.TOPLEFT || currentDirection == Direction.DOWNLEFT)
+            dir = Direction.LEFT;
+        else
+            dir = currentDirection;
+
+        Bullet bullet = new Bullet(dir);
         bullet.x = player.x + player.getWidth() / 2;
         bullet.y = player.y + player.getHeight() / 2;
         bullet.width = 12;
@@ -125,9 +195,13 @@ public class DungeonGameScreen implements Screen {
     @Override
     public void dispose() {
         game.dispose();
-        playerTexture.dispose();
+        playerRightTexture.dispose();
+        playerLeftTexture.dispose();
         bgTexture.dispose();
-        bulletTexture.dispose();
+        bulletRightTexture.dispose();
+        bulletLeftTexture.dispose();
+        bulletUpTexture.dispose();
+        bulletDownTexture.dispose();
     }
 
     @Override
