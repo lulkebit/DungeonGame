@@ -53,7 +53,7 @@ public class DungeonGameScreen implements Screen {
         bulletLeftTexture = new Texture("bulletLeft.png");
         bulletUpTexture = new Texture("bulletUp.png");
         bulletDownTexture = new Texture("bulletDown.png");
-        enemyTexture = new Texture("playerRight.png");
+        enemyTexture = new Texture("enemy.png");
 
         player = new Rectangle();
         player.x = (float) 1920 / 2 - (float) 64 / 2;
