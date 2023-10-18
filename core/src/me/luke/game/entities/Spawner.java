@@ -23,7 +23,7 @@ public class Spawner {
     }
 
     public static void spawnEnemy() {
-        Enemy enemy = new Enemy(0f, MathUtils.random(0, 1080-64), 64f, 64f, 150);
+        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 64f, 64f, 150);
         enemies.add(enemy);
         lastSpawnTime = TimeUtils.nanoTime();
     }
