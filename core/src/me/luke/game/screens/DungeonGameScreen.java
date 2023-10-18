@@ -95,54 +95,11 @@ public class DungeonGameScreen implements Screen {
         }
         game.batch.end();
 
-        if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) ||
-            (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-        ) {
-            previousDirection = Direction.RIGHT;
-            currentDirection = Direction.TOPRIGHT;
-            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
-        } else if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) ||
-                (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
-        ) {
-            previousDirection = Direction.LEFT;
-            currentDirection = Direction.TOPLEFT;
-            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
-        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D) ||
-                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-        ) {
-            previousDirection = Direction.RIGHT;
-            currentDirection = Direction.DOWNRIGHT;
-            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
-        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A) ||
-                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
-        ) {
-            previousDirection = Direction.LEFT;
-            currentDirection = Direction.DOWNLEFT;
-            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
-        } else {
-            if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                previousDirection = currentDirection;
-                currentDirection = Direction.LEFT;
-                player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                previousDirection = currentDirection;
-                currentDirection = Direction.RIGHT;
-                player.x += playerSpeed * Gdx.graphics.getDeltaTime();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                currentDirection = Direction.UP;
-                player.y += playerSpeed * Gdx.graphics.getDeltaTime();
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                currentDirection = Direction.DOWN;
-                player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
-            }
-        }
+        gameLoop();
+    }
+
+    private static void gameLoop() {
+        playerMovement();
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
             spawnBullet();
@@ -190,6 +147,67 @@ public class DungeonGameScreen implements Screen {
         bullet.height = 12;
         bullets.add(bullet);
         lastBulletTime = TimeUtils.nanoTime();
+    }
+
+    // TODO Fix Movement when using arrow keys and WASD at the same time
+    private static void playerMovement() {
+        if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) ||
+                (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+        ) {
+            previousDirection = Direction.RIGHT;
+            currentDirection = Direction.TOPRIGHT;
+            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+        } else if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) ||
+                (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
+        ) {
+            previousDirection = Direction.LEFT;
+            currentDirection = Direction.TOPLEFT;
+            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D) ||
+                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+        ) {
+            previousDirection = Direction.RIGHT;
+            currentDirection = Direction.DOWNRIGHT;
+            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A) ||
+                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
+        ) {
+            previousDirection = Direction.LEFT;
+            currentDirection = Direction.DOWNLEFT;
+            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+        } else {
+            if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+                previousDirection = currentDirection;
+                currentDirection = Direction.LEFT;
+                player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+                previousDirection = currentDirection;
+                currentDirection = Direction.RIGHT;
+                player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                currentDirection = Direction.UP;
+                player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+                currentDirection = Direction.DOWN;
+                player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+            }
+        }
+
+        if(player.x < 0)
+            player.x = 0;
+        if(player.x > 1920 - 64)
+            player.x = 1920 - 64;
+        if(player.y < 0)
+            player.y = 0;
+        if(player.y > 1080 - 64)
+            player.y = 1080 - 64;
     }
 
     @Override
