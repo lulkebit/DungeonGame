@@ -35,6 +35,7 @@ public class DungeonGameScreen implements Screen {
     private static long lastTimeHit;
     private static final long hitCD = 100000000;
     private static long timeAlive = 0;
+    private static long startTime = TimeUtils.millis();
 
     private final Texture bgTexture;
     private final Texture playerRightTexture;
@@ -97,11 +98,20 @@ public class DungeonGameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-        timeAlive = TimeUtils.millis();
+        timeAlive = (TimeUtils.millis() - startTime) / 1000;
+
+
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.font.draw(game.batch, "HP: " + (int) hp, player.getX(), player.getY() + player.getHeight() + 20);
-        game.font.draw(game.batch, "" + timeAlive, 0, 400);
+
+        // ----------------------- DEBUG ----------------------- //
+        game.font.draw(game.batch, "Alive: " + timeAlive, 0, 400);
+        game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380);
+        game.font.draw(game.batch, "HP: " + (int) hp, 0, 360);
+        game.font.draw(game.batch, "E-HP: " + hp, 0, 340);
+        game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320);
+        // ----------------------- DEBUG ----------------------- //
 
         // game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
 
