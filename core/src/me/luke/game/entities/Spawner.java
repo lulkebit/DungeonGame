@@ -12,6 +12,7 @@ public class Spawner {
     private static Array<Enemy> enemies;
     private static long lastSpawnTime;
     private static long timeBetweenSpawns;
+    public static int wave;
 
     public Spawner() {
         enemies = new Array<>();
@@ -24,7 +25,7 @@ public class Spawner {
     }
 
     public static void spawnEnemy() {
-        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 19f, 34f, 150);
+        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 15f, 29f, 150);
         enemies.add(enemy);
         lastSpawnTime = TimeUtils.nanoTime();
     }

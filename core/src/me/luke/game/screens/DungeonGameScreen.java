@@ -6,6 +6,8 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -26,6 +28,10 @@ public class DungeonGameScreen implements Screen {
     private static long lastBulletTime;
     private static final int bulletSpeed = 400;
     private static final int playerSpeed = 350;
+    private static int hp = 100;
+    private static long lastTimeHit;
+    private static final long hitCD = 100000000;
+    private static long timeAlive = 0;
 
     private final Texture bgTexture;
     private final Texture playerRightTexture;
@@ -37,8 +43,10 @@ public class DungeonGameScreen implements Screen {
     private final Texture enemyTexture;
 
     private static Rectangle player;
+    private static Rectangle spawnPoint;
     private static Array<Bullet> bullets;
     private static Spawner spawner;
+    private static Slider slider;
 
     public DungeonGameScreen(final Dungeon game) {
         this.game = game;
@@ -56,14 +64,23 @@ public class DungeonGameScreen implements Screen {
         enemyTexture = new Texture("enemy.png");
 
         player = new Rectangle();
-        player.x = (float) 1920 / 2 - (float) 64 / 2;
-        player.y = 20;
-        player.width = 64;
-        player.height = 64;
+        player.setWidth(60);
+        player.setHeight(60);
+        player.setX(1920f / 2f - player.getWidth() / 2f);
+        player.setY(1080f / 2f - player.getHeight() / 2f);
+
+        spawnPoint = new Rectangle();
+        spawnPoint.setWidth(1);
+        spawnPoint.setHeight(1);
+        spawnPoint.setX(player.getX() + player.getWidth());
+        spawnPoint.setY(player.getY() + player.getHeight() / 2);
+
+
+        lastTimeHit = TimeUtils.nanoTime();
 
         bullets = new Array<>();
-
         spawner = new Spawner();
+        //slider = new Slider(0, 100, 1, false, new Skin());
 
         // enemy = new Enemy(1920f / 2f, 1080f / 2f, 64f, 64f, 150);
     }
@@ -73,17 +90,32 @@ public class DungeonGameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-
+        timeAlive = TimeUtils.millis();
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        game.font.draw(game.batch, "HP: " + hp, player.getX(), player.getY() + player.getHeight() + 20);
+        game.font.draw(game.batch, "" + timeAlive, 0, 400);
 
         // game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
 
         if(previousDirection == Direction.RIGHT || currentDirection == Direction.RIGHT || currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT) {
             game.batch.draw(playerRightTexture, player.x, player.y);
+            spawnPoint.setX(player.getX() + player.getWidth());
+            spawnPoint.setY(player.getY() + player.getHeight() / 2);
         } else if (previousDirection == Direction.LEFT || currentDirection == Direction.LEFT || currentDirection == Direction.TOPLEFT || currentDirection == Direction.DOWNLEFT) {
             game.batch.draw(playerLeftTexture, player.x, player.y);
+            spawnPoint.setX(player.getX());
+            spawnPoint.setY(player.getY() + player.getHeight() / 2);
         }
+
+        if(currentDirection == Direction.DOWN) {
+            spawnPoint.setX(player.getX() + player.getWidth() / 2);
+            spawnPoint.setY(player.getY());
+        } else if(currentDirection == Direction.UP) {
+            spawnPoint.setX(player.getX() + player.getWidth() / 2);
+            spawnPoint.setY(player.getY() + player.getHeight());
+        }
+
 
         for(Bullet bullet : bullets) {
             switch (bullet.getDirection()) {
@@ -161,6 +193,13 @@ public class DungeonGameScreen implements Screen {
         }
     }
 
+    public static void hitPlayer(int dmg) {
+        if(TimeUtils.nanoTime() - lastTimeHit > hitCD) {
+            lastTimeHit = TimeUtils.nanoTime();
+            hp -= dmg;
+        }
+    }
+
     private static void spawnBullet() {
         Direction dir;
         if(currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT)
@@ -171,10 +210,10 @@ public class DungeonGameScreen implements Screen {
             dir = currentDirection;
 
         Bullet bullet = new Bullet(dir);
-        bullet.x = player.x + player.getWidth() / 2;
-        bullet.y = player.y + player.getHeight() / 2;
-        bullet.width = 12;
-        bullet.height = 12;
+        bullet.setX(spawnPoint.getX());
+        bullet.setY(spawnPoint.getY());
+        bullet.setWidth(12);
+        bullet.setHeight(12);
         bullets.add(bullet);
         lastBulletTime = TimeUtils.nanoTime();
     }
