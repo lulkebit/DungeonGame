@@ -1,6 +1,7 @@
 package me.luke.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -35,7 +36,7 @@ public class DungeonGameOverScreen implements Screen {
         game.font.draw(game.batch, "Click anywhere to continue", 1920f / 2f, 1080f / 2f - 25f);
         game.batch.end();
 
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
             game.setScreen(new DungeonStartScreen(game));
             dispose();
         }
