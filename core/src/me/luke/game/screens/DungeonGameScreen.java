@@ -28,7 +28,10 @@ public class DungeonGameScreen implements Screen {
     private static long lastBulletTime;
     private static final int bulletSpeed = 400;
     private static final int playerSpeed = 350;
-    private static int hp = 100;
+    private static float hp;
+    private static float maxHP;
+    private static float healing;
+    private static long lastHealTime;
     private static long lastTimeHit;
     private static final long hitCD = 100000000;
     private static long timeAlive = 0;
@@ -68,6 +71,10 @@ public class DungeonGameScreen implements Screen {
         player.setHeight(60);
         player.setX(1920f / 2f - player.getWidth() / 2f);
         player.setY(1080f / 2f - player.getHeight() / 2f);
+        hp = 100f;
+        maxHP = hp;
+        healing = 0.2f;
+        lastHealTime = TimeUtils.nanoTime();
 
         spawnPoint = new Rectangle();
         spawnPoint.setWidth(1);
@@ -145,7 +152,12 @@ public class DungeonGameScreen implements Screen {
         gameLoop();
     }
 
-    private static void gameLoop() {
+    private void gameLoop() {
+        if(hp <= 0) {
+            game.setScreen(new DungeonGameOverScreen(game));
+            dispose();
+        }
+
         playerMovement();
         spawner.spawnerLoop(player);
 
@@ -153,6 +165,10 @@ public class DungeonGameScreen implements Screen {
             spawnBullet();
         if(TimeUtils.nanoTime() - spawner.getLastSpawnTime() > 1000000000)
             spawner.spawnEnemy();
+        if(TimeUtils.nanoTime() - lastHealTime > 1000000000 && hp < maxHP) {
+            lastHealTime = TimeUtils.nanoTime();
+            hp += healing;
+        }
 
         for (Iterator<Bullet> iter = bullets.iterator(); iter.hasNext(); ) {
             Bullet bullet = iter.next();
@@ -281,7 +297,7 @@ public class DungeonGameScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.dispose();
+        //game.dispose();
         playerRightTexture.dispose();
         playerLeftTexture.dispose();
         bgTexture.dispose();
