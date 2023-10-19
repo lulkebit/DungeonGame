@@ -100,7 +100,7 @@ public class DungeonGameScreen implements Screen {
         timeAlive = TimeUtils.millis();
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        game.font.draw(game.batch, "HP: " + hp, player.getX(), player.getY() + player.getHeight() + 20);
+        game.font.draw(game.batch, "HP: " + (int) hp, player.getX(), player.getY() + player.getHeight() + 20);
         game.font.draw(game.batch, "" + timeAlive, 0, 400);
 
         // game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
