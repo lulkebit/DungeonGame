@@ -5,19 +5,17 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
-import me.luke.game.Drop;
 import me.luke.game.Dungeon;
 
-public class DungeonStartScreen implements Screen {
-
+public class DungeonPauseScreen implements Screen {
     final Dungeon game;
     final DungeonGameScreen gameScreen;
 
     OrthographicCamera camera;
 
-    public DungeonStartScreen(final Dungeon game) {
+    public DungeonPauseScreen(final Dungeon game, final DungeonGameScreen gameScreen) {
         this.game = game;
-        gameScreen = new DungeonGameScreen(game);
+        this.gameScreen = gameScreen;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1920, 1080);
@@ -36,8 +34,7 @@ public class DungeonStartScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.font.draw(game.batch, "Welcome to an absolutely unfinished Game!!! ", 100, 150);
-        game.font.draw(game.batch, "Tap anywhere to begin!", 100, 100);
+        game.font.draw(game.batch, "Pause Screen", 1920f / 2f, 1080f / 2f);
         game.batch.end();
 
         if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
@@ -70,5 +67,4 @@ public class DungeonStartScreen implements Screen {
     public void dispose() {
 
     }
-
 }

@@ -163,6 +163,9 @@ public class DungeonGameScreen implements Screen {
     }
 
     private void gameLoop() {
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
+            game.setScreen(new DungeonPauseScreen(game, this));
+
         if(hp <= 0) {
             game.setScreen(new DungeonGameOverScreen(game));
             dispose();
