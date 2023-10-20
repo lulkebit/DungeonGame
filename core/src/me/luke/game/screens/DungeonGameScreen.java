@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.Bullet;
 import me.luke.game.entities.Enemy;
+import me.luke.game.entities.Player;
 import me.luke.game.entities.Spawner;
 import me.luke.game.enums.Direction;
 
@@ -22,15 +23,10 @@ import java.util.Iterator;
 public class DungeonGameScreen implements Screen {
     private final Dungeon game;
     private final OrthographicCamera camera;
-    private static Direction currentDirection = Direction.RIGHT;
-    private static Direction previousDirection = Direction.RIGHT;
 
     private static long lastBulletTime;
     private static final int bulletSpeed = 400;
-    private static final int playerSpeed = 350;
-    private static float hp;
-    private static float maxHP;
-    private static float healing;
+
     private static long lastHealTime;
     private static long lastTimeHit;
     private static final long hitCD = 100000000;
@@ -46,7 +42,7 @@ public class DungeonGameScreen implements Screen {
     private final Texture bulletDownTexture;
     private final Texture enemyTexture;
 
-    private static Rectangle player;
+    private static Player player;
     private static Rectangle spawnPoint;
     private static Array<Bullet> bullets;
     private static Spawner spawner;
@@ -67,14 +63,12 @@ public class DungeonGameScreen implements Screen {
         bulletDownTexture = new Texture("bulletDown.png");
         enemyTexture = new Texture("enemy.png");
 
-        player = new Rectangle();
+        player = new Player(100f, 100f, 0.2f);
         player.setWidth(60);
         player.setHeight(60);
         player.setX(1920f / 2f - player.getWidth() / 2f);
         player.setY(1080f / 2f - player.getHeight() / 2f);
-        hp = 100f;
-        maxHP = hp;
-        healing = 0.2f;
+
         lastHealTime = TimeUtils.nanoTime();
 
         spawnPoint = new Rectangle();
@@ -106,33 +100,33 @@ public class DungeonGameScreen implements Screen {
 
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        game.font.draw(game.batch, "HP: " + (int) hp, player.getX(), player.getY() + player.getHeight() + 20);
+        game.font.draw(game.batch, "HP: " + (int) player.getHp(), player.getX(), player.getY() + player.getHeight() + 20);
         game.font.draw(game.batch, timeString, 1920f / 2f, 1080 - 20);
 
         // ----------------------- DEBUG ----------------------- //
         game.font.draw(game.batch, "Alive: " + timeString, 0, 400);
         game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380);
-        game.font.draw(game.batch, "HP: " + (int) hp, 0, 360);
-        game.font.draw(game.batch, "E-HP: " + hp, 0, 340);
+        game.font.draw(game.batch, "HP: " + (int) player.getHp(), 0, 360);
+        game.font.draw(game.batch, "E-HP: " + player.getHp(), 0, 340);
         game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320);
         // ----------------------- DEBUG ----------------------- //
 
         // game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
 
-        if(previousDirection == Direction.RIGHT || currentDirection == Direction.RIGHT || currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT) {
+        if(player.getPreviousDirection() == Direction.RIGHT || player.getCurrentDirection() == Direction.RIGHT || player.getCurrentDirection() == Direction.TOPRIGHT || player.getCurrentDirection() == Direction.DOWNRIGHT) {
             game.batch.draw(playerRightTexture, player.x, player.y);
             spawnPoint.setX(player.getX() + player.getWidth());
             spawnPoint.setY(player.getY() + player.getHeight() / 2);
-        } else if (previousDirection == Direction.LEFT || currentDirection == Direction.LEFT || currentDirection == Direction.TOPLEFT || currentDirection == Direction.DOWNLEFT) {
+        } else if (player.getPreviousDirection() == Direction.LEFT || player.getCurrentDirection() == Direction.LEFT || player.getCurrentDirection() == Direction.TOPLEFT || player.getCurrentDirection() == Direction.DOWNLEFT) {
             game.batch.draw(playerLeftTexture, player.x, player.y);
             spawnPoint.setX(player.getX());
             spawnPoint.setY(player.getY() + player.getHeight() / 2);
         }
 
-        if(currentDirection == Direction.DOWN) {
+        if(player.getCurrentDirection() == Direction.DOWN) {
             spawnPoint.setX(player.getX() + player.getWidth() / 2);
             spawnPoint.setY(player.getY());
-        } else if(currentDirection == Direction.UP) {
+        } else if(player.getCurrentDirection() == Direction.UP) {
             spawnPoint.setX(player.getX() + player.getWidth() / 2);
             spawnPoint.setY(player.getY() + player.getHeight());
         }
@@ -170,7 +164,7 @@ public class DungeonGameScreen implements Screen {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))
             game.setScreen(new DungeonPauseScreen(game, this));
 
-        if(hp <= 0) {
+        if(player.getHp() <= 0) {
             game.setScreen(new DungeonGameOverScreen(game));
             dispose();
         }
@@ -182,9 +176,9 @@ public class DungeonGameScreen implements Screen {
             spawnBullet();
         if(TimeUtils.nanoTime() - spawner.getLastSpawnTime() > 1000000000)
             spawner.spawnEnemy();
-        if(TimeUtils.nanoTime() - lastHealTime > 1000000000 && hp < maxHP) {
+        if(TimeUtils.nanoTime() - lastHealTime > 1000000000 && player.getHp() < player.getMaxHP()) {
             lastHealTime = TimeUtils.nanoTime();
-            hp += healing;
+            player.setHp(player.getHp() + player.getHealing());
         }
 
         for (Iterator<Bullet> iter = bullets.iterator(); iter.hasNext(); ) {
@@ -229,18 +223,18 @@ public class DungeonGameScreen implements Screen {
     public static void hitPlayer(int dmg) {
         if(TimeUtils.nanoTime() - lastTimeHit > hitCD) {
             lastTimeHit = TimeUtils.nanoTime();
-            hp -= dmg;
+            player.setHp(player.getHp() - dmg);
         }
     }
 
     private static void spawnBullet() {
         Direction dir;
-        if(currentDirection == Direction.TOPRIGHT || currentDirection == Direction.DOWNRIGHT)
+        if(player.getCurrentDirection() == Direction.TOPRIGHT || player.getCurrentDirection() == Direction.DOWNRIGHT)
             dir = Direction.RIGHT;
-        else if(currentDirection == Direction.TOPLEFT || currentDirection == Direction.DOWNLEFT)
+        else if(player.getCurrentDirection() == Direction.TOPLEFT || player.getCurrentDirection() == Direction.DOWNLEFT)
             dir = Direction.LEFT;
         else
-            dir = currentDirection;
+            dir = player.getCurrentDirection();
 
         Bullet bullet = new Bullet(dir);
         bullet.setX(spawnPoint.getX());
@@ -256,60 +250,60 @@ public class DungeonGameScreen implements Screen {
         if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) ||
                 (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
         ) {
-            previousDirection = Direction.RIGHT;
-            currentDirection = Direction.TOPRIGHT;
-            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+            player.setPreviousDirection(Direction.RIGHT);
+            player.setCurrentDirection(Direction.TOPRIGHT);
+            player.setX(player.getX() + player.getSpeed() * Gdx.graphics.getDeltaTime());
+            player.setY(player.getY() + player.getSpeed() * Gdx.graphics.getDeltaTime());
         } else if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) ||
                 (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
         ) {
-            previousDirection = Direction.LEFT;
-            currentDirection = Direction.TOPLEFT;
-            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+            player.setPreviousDirection(Direction.LEFT);
+            player.setCurrentDirection(Direction.TOPLEFT);
+            player.setX(player.getX() - player.getSpeed() * Gdx.graphics.getDeltaTime());
+            player.setY(player.getY() + player.getSpeed() * Gdx.graphics.getDeltaTime());
         } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D) ||
                 (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
         ) {
-            previousDirection = Direction.RIGHT;
-            currentDirection = Direction.DOWNRIGHT;
-            player.x += playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+            player.setPreviousDirection(Direction.RIGHT);
+            player.setCurrentDirection(Direction.DOWNRIGHT);
+            player.setX(player.getX() + player.getSpeed() * Gdx.graphics.getDeltaTime());
+            player.setY(player.getY() - player.getSpeed() * Gdx.graphics.getDeltaTime());
         } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A) ||
                 (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
         ) {
-            previousDirection = Direction.LEFT;
-            currentDirection = Direction.DOWNLEFT;
-            player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
-            player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+            player.setPreviousDirection(Direction.LEFT);
+            player.setCurrentDirection(Direction.DOWNLEFT);
+            player.setX(player.getX() - player.getSpeed() * Gdx.graphics.getDeltaTime());
+            player.setY(player.getY() - player.getSpeed() * Gdx.graphics.getDeltaTime());
         } else {
             if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                previousDirection = currentDirection;
-                currentDirection = Direction.LEFT;
-                player.x -= playerSpeed * Gdx.graphics.getDeltaTime();
+                player.setPreviousDirection(player.getCurrentDirection());
+                player.setCurrentDirection(Direction.LEFT);
+                player.setX(player.getX() - player.getSpeed() * Gdx.graphics.getDeltaTime());
             }
             if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                previousDirection = currentDirection;
-                currentDirection = Direction.RIGHT;
-                player.x += playerSpeed * Gdx.graphics.getDeltaTime();
+                player.setPreviousDirection(player.getCurrentDirection());
+                player.setCurrentDirection(Direction.RIGHT);
+                player.setX(player.getX() + player.getSpeed() * Gdx.graphics.getDeltaTime());
             }
             if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                currentDirection = Direction.UP;
-                player.y += playerSpeed * Gdx.graphics.getDeltaTime();
+                player.setCurrentDirection(Direction.UP);
+                player.setY(player.getY() + player.getSpeed() * Gdx.graphics.getDeltaTime());
             }
             if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                currentDirection = Direction.DOWN;
-                player.y -= playerSpeed * Gdx.graphics.getDeltaTime();
+                player.setCurrentDirection(Direction.DOWN);
+                player.setY(player.getY() - player.getSpeed() * Gdx.graphics.getDeltaTime());
             }
         }
 
-        if(player.x < 0)
-            player.x = 0;
-        if(player.x > 1920 - 64)
-            player.x = 1920 - 64;
-        if(player.y < 0)
-            player.y = 0;
-        if(player.y > 1080 - 64)
-            player.y = 1080 - 64;
+        if(player.getX() < 0)
+            player.setX(0);
+        if(player.getX() > 1920 - player.getWidth())
+            player.setX(1920 - player.getWidth());
+        if(player.getY() < 0)
+            player.setY(0);
+        if(player.getY() > 1080 - player.getHeight())
+            player.setY(1080 - player.getHeight());
     }
 
     @Override
