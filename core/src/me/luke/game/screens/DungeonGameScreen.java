@@ -99,14 +99,18 @@ public class DungeonGameScreen implements Screen {
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
         timeAlive = (TimeUtils.millis() - startTime) / 1000;
+        long minutes = (timeAlive % 3600) / 60;
+        long seconds = timeAlive % 60;
+        String timeString = String.format("%02d:%02d", minutes, seconds);
 
 
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         game.font.draw(game.batch, "HP: " + (int) hp, player.getX(), player.getY() + player.getHeight() + 20);
+        game.font.draw(game.batch, timeString, 1920f / 2f, 1080 - 20);
 
         // ----------------------- DEBUG ----------------------- //
-        game.font.draw(game.batch, "Alive: " + timeAlive, 0, 400);
+        game.font.draw(game.batch, "Alive: " + timeString, 0, 400);
         game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380);
         game.font.draw(game.batch, "HP: " + (int) hp, 0, 360);
         game.font.draw(game.batch, "E-HP: " + hp, 0, 340);
