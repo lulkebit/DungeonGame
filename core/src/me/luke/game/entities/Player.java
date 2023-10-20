@@ -3,7 +3,11 @@ package me.luke.game.entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Rectangle;
+import me.luke.game.Dungeon;
 import me.luke.game.enums.Direction;
+import me.luke.game.screens.DungeonGameScreen;
+import me.luke.game.screens.DungeonLevelUpScreen;
+import me.luke.game.screens.DungeonPauseScreen;
 
 public class Player extends Rectangle {
     private Direction currentDirection;
@@ -13,11 +17,11 @@ public class Player extends Rectangle {
     private float hp;
     private float maxHP;
     private float healing;
-    private float level;
-    private float xp;
-    private float xpToNextLevel;
+    private int level;
+    private int xp;
+    private int xpToNextLevel;
 
-    public Player(float hp, float maxHP, float healing, float startLevel) {
+    public Player(float hp, float maxHP, float healing, int startLevel) {
         this.currentDirection = Direction.RIGHT;
         this.previousDirection = Direction.RIGHT;
         this.speed = 350;
@@ -33,10 +37,17 @@ public class Player extends Rectangle {
         this.xp += xp;
     }
 
-    public void levelUp() {
-        this.xp = 0;
-        this.level++;
-        this.xpToNextLevel += 2;
+    public void levelUp(final Dungeon game, final DungeonGameScreen gameScreen) {
+        setXp(0);
+        setLevel(getLevel() + 1);
+        setXpToNextLevel(getXpToNextLevel() + 2);
+
+        if(getHp() < getMaxHP())
+            setHp(getHp() + 4);
+        else if(getHp() > getMaxHP() - 4)
+            setHp(getMaxHP());
+
+        game.setScreen(new DungeonLevelUpScreen(game, gameScreen));
     }
 
     // TODO Fix Movement when using arrow keys and WASD at the same time
@@ -148,27 +159,27 @@ public class Player extends Rectangle {
         this.healing = healing;
     }
 
-    public float getLevel() {
+    public int getLevel() {
         return level;
     }
 
-    public void setLevel(float level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
-    public float getXp() {
+    public int getXp() {
         return xp;
     }
 
-    public void setXp(float xp) {
+    public void setXp(int xp) {
         this.xp = xp;
     }
 
-    public float getXpToNextLevel() {
+    public int getXpToNextLevel() {
         return xpToNextLevel;
     }
 
-    public void setXpToNextLevel(float xpToNextLevel) {
+    public void setXpToNextLevel(int xpToNextLevel) {
         this.xpToNextLevel = xpToNextLevel;
     }
 }

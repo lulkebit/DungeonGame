@@ -143,6 +143,8 @@ public class DungeonGameScreen implements Screen {
 
         game.font.draw(game.batch, "HP: " + (int) player.getHp(), player.getX(), player.getY() + player.getHeight() + 20);
         game.font.draw(game.batch, timeString, 1920f / 2f, 1080 - 20);
+        game.font.draw(game.batch, "Level " + player.getLevel(), 1920f / 2f, 1080 - 35);
+        game.font.draw(game.batch, player.getXp() + " XP", 1920f / 2f, 1080 - 50);
 
         // ----------------------- DEBUG ----------------------- //
         game.font.draw(game.batch, "Alive: " + timeString, 0, 400);
@@ -169,7 +171,7 @@ public class DungeonGameScreen implements Screen {
         }
 
         if(player.getXp() >= player.getXpToNextLevel())
-            player.levelUp();
+            player.levelUp(game, this);
 
         player.playerMovement();
         spawner.spawnerLoop(player);
@@ -216,9 +218,9 @@ public class DungeonGameScreen implements Screen {
             Enemy enemy = iter.next();
 
             if(bullet.overlaps(enemy)) {
+                bullets.removeIndex(bullets.indexOf(bullet, true));
                 iter.remove();
                 player.addXp(enemy.getDroppedXp());
-                bullets.removeIndex(bullets.indexOf(bullet, true));
             }
         }
     }
