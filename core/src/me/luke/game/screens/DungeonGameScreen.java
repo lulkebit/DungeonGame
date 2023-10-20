@@ -31,7 +31,7 @@ public class DungeonGameScreen implements Screen {
     private static long lastTimeHit;
     private static final long hitCD = 100000000;
     private static long timeAlive = 0;
-    private static long startTime = TimeUtils.millis();
+    private static final long startTime = TimeUtils.millis();
 
     private final Texture bgTexture;
     private final Texture playerRightTexture;
@@ -100,18 +100,6 @@ public class DungeonGameScreen implements Screen {
 
         game.batch.begin();
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        game.font.draw(game.batch, "HP: " + (int) player.getHp(), player.getX(), player.getY() + player.getHeight() + 20);
-        game.font.draw(game.batch, timeString, 1920f / 2f, 1080 - 20);
-
-        // ----------------------- DEBUG ----------------------- //
-        game.font.draw(game.batch, "Alive: " + timeString, 0, 400);
-        game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380);
-        game.font.draw(game.batch, "HP: " + (int) player.getHp(), 0, 360);
-        game.font.draw(game.batch, "E-HP: " + player.getHp(), 0, 340);
-        game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320);
-        // ----------------------- DEBUG ----------------------- //
-
-        // game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
 
         if(player.getPreviousDirection() == Direction.RIGHT || player.getCurrentDirection() == Direction.RIGHT || player.getCurrentDirection() == Direction.TOPRIGHT || player.getCurrentDirection() == Direction.DOWNRIGHT) {
             game.batch.draw(playerRightTexture, player.x, player.y);
@@ -152,9 +140,20 @@ public class DungeonGameScreen implements Screen {
             }
         }
 
-        for(Rectangle enemy: spawner.getEnemies()) {
+        for(Rectangle enemy : spawner.getEnemies()) {
             game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
         }
+
+        game.font.draw(game.batch, "HP: " + (int) player.getHp(), player.getX(), player.getY() + player.getHeight() + 20);
+        game.font.draw(game.batch, timeString, 1920f / 2f, 1080 - 20);
+
+        // ----------------------- DEBUG ----------------------- //
+        game.font.draw(game.batch, "Alive: " + timeString, 0, 400);
+        game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380);
+        game.font.draw(game.batch, "HP: " + (int) player.getHp(), 0, 360);
+        game.font.draw(game.batch, "E-HP: " + player.getHp(), 0, 340);
+        game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320);
+        // ----------------------- DEBUG ----------------------- //
         game.batch.end();
 
         gameLoop();
@@ -169,7 +168,7 @@ public class DungeonGameScreen implements Screen {
             dispose();
         }
 
-        playerMovement();
+        player.playerMovement();
         spawner.spawnerLoop(player);
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
@@ -243,67 +242,6 @@ public class DungeonGameScreen implements Screen {
         bullet.setHeight(12);
         bullets.add(bullet);
         lastBulletTime = TimeUtils.nanoTime();
-    }
-
-    // TODO Fix Movement when using arrow keys and WASD at the same time
-    private static void playerMovement() {
-        if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) ||
-                (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-        ) {
-            player.setPreviousDirection(Direction.RIGHT);
-            player.setCurrentDirection(Direction.TOPRIGHT);
-            player.setX(player.getX() + player.getSpeed() * Gdx.graphics.getDeltaTime());
-            player.setY(player.getY() + player.getSpeed() * Gdx.graphics.getDeltaTime());
-        } else if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.A)) ||
-                (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
-        ) {
-            player.setPreviousDirection(Direction.LEFT);
-            player.setCurrentDirection(Direction.TOPLEFT);
-            player.setX(player.getX() - player.getSpeed() * Gdx.graphics.getDeltaTime());
-            player.setY(player.getY() + player.getSpeed() * Gdx.graphics.getDeltaTime());
-        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.D) ||
-                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-        ) {
-            player.setPreviousDirection(Direction.RIGHT);
-            player.setCurrentDirection(Direction.DOWNRIGHT);
-            player.setX(player.getX() + player.getSpeed() * Gdx.graphics.getDeltaTime());
-            player.setY(player.getY() - player.getSpeed() * Gdx.graphics.getDeltaTime());
-        } else if(Gdx.input.isKeyPressed(Input.Keys.S) && Gdx.input.isKeyPressed(Input.Keys.A) ||
-                (Gdx.input.isKeyPressed(Input.Keys.DOWN) && Gdx.input.isKeyPressed(Input.Keys.LEFT))
-        ) {
-            player.setPreviousDirection(Direction.LEFT);
-            player.setCurrentDirection(Direction.DOWNLEFT);
-            player.setX(player.getX() - player.getSpeed() * Gdx.graphics.getDeltaTime());
-            player.setY(player.getY() - player.getSpeed() * Gdx.graphics.getDeltaTime());
-        } else {
-            if(Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                player.setPreviousDirection(player.getCurrentDirection());
-                player.setCurrentDirection(Direction.LEFT);
-                player.setX(player.getX() - player.getSpeed() * Gdx.graphics.getDeltaTime());
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                player.setPreviousDirection(player.getCurrentDirection());
-                player.setCurrentDirection(Direction.RIGHT);
-                player.setX(player.getX() + player.getSpeed() * Gdx.graphics.getDeltaTime());
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-                player.setCurrentDirection(Direction.UP);
-                player.setY(player.getY() + player.getSpeed() * Gdx.graphics.getDeltaTime());
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-                player.setCurrentDirection(Direction.DOWN);
-                player.setY(player.getY() - player.getSpeed() * Gdx.graphics.getDeltaTime());
-            }
-        }
-
-        if(player.getX() < 0)
-            player.setX(0);
-        if(player.getX() > 1920 - player.getWidth())
-            player.setX(1920 - player.getWidth());
-        if(player.getY() < 0)
-            player.setY(0);
-        if(player.getY() > 1080 - player.getHeight())
-            player.setY(1080 - player.getHeight());
     }
 
     @Override
