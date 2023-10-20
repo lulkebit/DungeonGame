@@ -13,14 +13,30 @@ public class Player extends Rectangle {
     private float hp;
     private float maxHP;
     private float healing;
+    private float level;
+    private float xp;
+    private float xpToNextLevel;
 
-    public Player(float hp, float maxHP, float healing) {
+    public Player(float hp, float maxHP, float healing, float startLevel) {
         this.currentDirection = Direction.RIGHT;
         this.previousDirection = Direction.RIGHT;
         this.speed = 350;
         this.hp = hp;
         this.maxHP = maxHP;
         this.healing = healing;
+        this.level = startLevel;
+        this.xp = 0;
+        this.xpToNextLevel = 100;
+    }
+
+    public void addXp(int xp) {
+        this.xp += xp;
+    }
+
+    public void levelUp() {
+        this.xp = 0;
+        this.level++;
+        this.xpToNextLevel += 2;
     }
 
     // TODO Fix Movement when using arrow keys and WASD at the same time
@@ -130,5 +146,29 @@ public class Player extends Rectangle {
 
     public void setHealing(float healing) {
         this.healing = healing;
+    }
+
+    public float getLevel() {
+        return level;
+    }
+
+    public void setLevel(float level) {
+        this.level = level;
+    }
+
+    public float getXp() {
+        return xp;
+    }
+
+    public void setXp(float xp) {
+        this.xp = xp;
+    }
+
+    public float getXpToNextLevel() {
+        return xpToNextLevel;
+    }
+
+    public void setXpToNextLevel(float xpToNextLevel) {
+        this.xpToNextLevel = xpToNextLevel;
     }
 }

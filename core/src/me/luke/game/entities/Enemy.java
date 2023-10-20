@@ -9,6 +9,7 @@ import static me.luke.game.screens.DungeonGameScreen.hitPlayer;
 public class Enemy extends Rectangle {
     private int speed;
     private int dmg = 2;
+    private int droppedXp;
 
     public Enemy(float x, float y, float width, float height, int speed) {
         this.setX(x);
@@ -16,6 +17,7 @@ public class Enemy extends Rectangle {
         this.setWidth(width);
         this.setHeight(height);
         this.speed = speed;
+        this.droppedXp = 10;
     }
 
     public void move(Rectangle player) {
@@ -34,5 +36,9 @@ public class Enemy extends Rectangle {
 
     public int getDmg() {
         return dmg;
+    }
+
+    public int getDroppedXp() {
+        return droppedXp;
     }
 }

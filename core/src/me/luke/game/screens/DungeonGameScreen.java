@@ -63,7 +63,7 @@ public class DungeonGameScreen implements Screen {
         bulletDownTexture = new Texture("bulletDown.png");
         enemyTexture = new Texture("enemy.png");
 
-        player = new Player(100f, 100f, 0.2f);
+        player = new Player(100f, 100f, 0.2f, 0);
         player.setWidth(60);
         player.setHeight(60);
         player.setX(1920f / 2f - player.getWidth() / 2f);
@@ -82,9 +82,6 @@ public class DungeonGameScreen implements Screen {
 
         bullets = new Array<>();
         spawner = new Spawner();
-        //slider = new Slider(0, 100, 1, false, new Skin());
-
-        // enemy = new Enemy(1920f / 2f, 1080f / 2f, 64f, 64f, 150);
     }
 
     @Override
@@ -153,6 +150,9 @@ public class DungeonGameScreen implements Screen {
         game.font.draw(game.batch, "HP: " + (int) player.getHp(), 0, 360);
         game.font.draw(game.batch, "E-HP: " + player.getHp(), 0, 340);
         game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320);
+        game.font.draw(game.batch, "XP: " + player.getXp(), 0, 300);
+        game.font.draw(game.batch, "XPToNextLvL: " + player.getXpToNextLevel(), 0, 280);
+        game.font.draw(game.batch, "Level: " + player.getLevel(), 0, 260);
         // ----------------------- DEBUG ----------------------- //
         game.batch.end();
 
@@ -167,6 +167,9 @@ public class DungeonGameScreen implements Screen {
             game.setScreen(new DungeonGameOverScreen(game));
             dispose();
         }
+
+        if(player.getXp() >= player.getXpToNextLevel())
+            player.levelUp();
 
         player.playerMovement();
         spawner.spawnerLoop(player);
@@ -214,6 +217,7 @@ public class DungeonGameScreen implements Screen {
 
             if(bullet.overlaps(enemy)) {
                 iter.remove();
+                player.addXp(enemy.getDroppedXp());
                 bullets.removeIndex(bullets.indexOf(bullet, true));
             }
         }
@@ -246,7 +250,6 @@ public class DungeonGameScreen implements Screen {
 
     @Override
     public void dispose() {
-        //game.dispose();
         playerRightTexture.dispose();
         playerLeftTexture.dispose();
         bgTexture.dispose();
