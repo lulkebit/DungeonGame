@@ -12,10 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
-import me.luke.game.entities.Bullet;
-import me.luke.game.entities.Enemy;
-import me.luke.game.entities.Player;
-import me.luke.game.entities.Spawner;
+import me.luke.game.entities.*;
 import me.luke.game.enums.Direction;
 
 import java.util.Iterator;
@@ -41,10 +38,12 @@ public class DungeonGameScreen implements Screen {
     private final Texture bulletUpTexture;
     private final Texture bulletDownTexture;
     private final Texture enemyTexture;
+    private final Texture xpTexture;
 
     private static Player player;
     private static Rectangle spawnPoint;
     private static Array<Bullet> bullets;
+    private static Array<XpOrb> xpOrbs;
     private static Spawner spawner;
     private static Slider slider;
 
@@ -62,6 +61,7 @@ public class DungeonGameScreen implements Screen {
         bulletUpTexture = new Texture("bulletUp.png");
         bulletDownTexture = new Texture("bulletDown.png");
         enemyTexture = new Texture("enemy.png");
+        xpTexture = new Texture("xp.png");
 
         player = new Player(100f, 100f, 0.2f, 0);
         player.setWidth(60);
@@ -82,6 +82,7 @@ public class DungeonGameScreen implements Screen {
 
         bullets = new Array<>();
         spawner = new Spawner();
+        xpOrbs = new Array<>();
     }
 
     @Override
@@ -137,7 +138,11 @@ public class DungeonGameScreen implements Screen {
             }
         }
 
-        for(Rectangle enemy : spawner.getEnemies()) {
+        for(XpOrb xpOrb : xpOrbs) {
+            game.batch.draw(xpTexture, xpOrb.x, xpOrb.y);
+        }
+
+        for(Enemy enemy : spawner.getEnemies()) {
             game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
         }
 
@@ -211,6 +216,8 @@ public class DungeonGameScreen implements Screen {
             }
             hitCheck(spawner.getEnemies(), bullet);
         }
+
+        playerOrbCheck(xpOrbs, player);
     }
 
     private static void hitCheck(Array<Enemy> enemies, Bullet bullet) {
@@ -218,9 +225,20 @@ public class DungeonGameScreen implements Screen {
             Enemy enemy = iter.next();
 
             if(bullet.overlaps(enemy)) {
+                xpOrbs.add(new XpOrb(bullet.getX(), bullet.getY(), enemy.getDroppedXp()));
                 bullets.removeIndex(bullets.indexOf(bullet, true));
                 iter.remove();
-                player.addXp(enemy.getDroppedXp());
+            }
+        }
+    }
+
+    private static void playerOrbCheck(Array<XpOrb> xpOrbs, Player player) {
+        for (Iterator<XpOrb> iter = xpOrbs.iterator(); iter.hasNext(); ) {
+            XpOrb xpOrb = iter.next();
+
+            if(player.overlaps(xpOrb)) {
+                iter.remove();
+                player.addXp(xpOrb.getValue());
             }
         }
     }
