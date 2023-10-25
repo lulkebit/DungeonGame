@@ -225,10 +225,18 @@ public class DungeonGameScreen implements Screen {
             Enemy enemy = iter.next();
 
             if(bullet.overlaps(enemy)) {
-                xpOrbs.add(new XpOrb(bullet.getX(), bullet.getY(), enemy.getDroppedXp()));
-                bullets.removeIndex(bullets.indexOf(bullet, true));
+                xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
+                killBullet(bullet);
                 iter.remove();
             }
+        }
+    }
+
+    private static void killBullet(Bullet bulletToKill) {
+        for(int i = 0; i < bullets.size; i++) {
+
+            if(bullets.get(i) == bulletToKill)
+                bullets.removeIndex(i);
         }
     }
 

@@ -36,7 +36,7 @@ public class DungeonGameOverScreen implements Screen {
         game.font.draw(game.batch, "Click anywhere to continue", 1920f / 2f, 1080f / 2f - 25f);
         game.batch.end();
 
-        if (Gdx.input.isTouched() || Gdx.input.isKeyPressed(Input.Keys.ANY_KEY)) {
+        if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
             game.setScreen(new DungeonStartScreen(game));
             dispose();
         }

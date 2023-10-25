@@ -38,7 +38,7 @@ public class Player extends Rectangle {
     }
 
     public void levelUp(final Dungeon game, final DungeonGameScreen gameScreen) {
-        setXp(0);
+        setXp(getXp() - getXpToNextLevel());
         setLevel(getLevel() + 1);
         setXpToNextLevel(getXpToNextLevel() + 2);
 

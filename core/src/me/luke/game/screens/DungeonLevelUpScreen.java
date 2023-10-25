@@ -39,7 +39,7 @@ public class DungeonLevelUpScreen implements Screen {
         game.font.draw(game.batch, "Weapon 3", 1920f / 2f, 1080f / 2f - 45);
         game.batch.end();
 
-        if (Gdx.input.isTouched()) {
+        if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             game.setScreen(gameScreen);
             dispose();
         }
