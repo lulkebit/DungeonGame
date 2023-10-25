@@ -152,14 +152,19 @@ public class DungeonGameScreen implements Screen {
         game.font.draw(game.batch, player.getXp() + " XP", 1920f / 2f, 1080 - 50);
 
         // ----------------------- DEBUG ----------------------- //
-        game.font.draw(game.batch, "Alive: " + timeString, 0, 400);
-        game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380);
-        game.font.draw(game.batch, "HP: " + (int) player.getHp(), 0, 360);
-        game.font.draw(game.batch, "E-HP: " + player.getHp(), 0, 340);
-        game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320);
-        game.font.draw(game.batch, "XP: " + player.getXp(), 0, 300);
-        game.font.draw(game.batch, "XPToNextLvL: " + player.getXpToNextLevel(), 0, 280);
-        game.font.draw(game.batch, "Level: " + player.getLevel(), 0, 260);
+        int offset = 400;
+        game.font.draw(game.batch, "Alive: " + timeString, 0, 400 + offset);
+        game.font.draw(game.batch, "Delta: " + Gdx.graphics.getDeltaTime(), 0, 380 + offset);
+        game.font.draw(game.batch, "HP: " + (int) player.getHp(), 0, 360 + offset);
+        game.font.draw(game.batch, "E-HP: " + player.getHp(), 0, 340 + offset);
+        game.font.draw(game.batch, "FPS: " + Gdx.graphics.getFramesPerSecond(), 0, 320 + offset);
+        game.font.draw(game.batch, "XP: " + player.getXp(), 0, 300 + offset);
+        game.font.draw(game.batch, "XPToNextLvL: " + player.getXpToNextLevel(), 0, 280 + offset);
+        game.font.draw(game.batch, "Level: " + player.getLevel(), 0, 260 + offset);
+        game.font.draw(game.batch, "Wave: " + spawner.getWave(), 0, 240 + offset);
+        game.font.draw(game.batch, "NextWaveSpawn: " + spawner.getNextWaveSpawn(), 0, 220 + offset);
+        game.font.draw(game.batch, "TimeNow: " + spawner.getTimeNow(), 0, 200 + offset);
+        game.font.draw(game.batch, "TimeBetweenSpawns: " + spawner.getTimeBetweenSpawns(), 0, 180 + offset);
         // ----------------------- DEBUG ----------------------- //
         game.batch.end();
 
@@ -183,8 +188,6 @@ public class DungeonGameScreen implements Screen {
 
         if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
             spawnBullet();
-        if(TimeUtils.nanoTime() - spawner.getLastSpawnTime() > 1000000000)
-            spawner.spawnEnemy();
         if(TimeUtils.nanoTime() - lastHealTime > 1000000000 && player.getHp() < player.getMaxHP()) {
             lastHealTime = TimeUtils.nanoTime();
             player.setHp(player.getHp() + player.getHealing());
