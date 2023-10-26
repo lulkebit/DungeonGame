@@ -2,6 +2,7 @@ package me.luke.game.entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import me.luke.game.Dungeon;
 import me.luke.game.enums.Direction;
@@ -13,6 +14,8 @@ public class Player extends Rectangle {
     private Direction currentDirection;
     private Direction previousDirection;
 
+    private Circle pickupRange;
+
     private int speed;
     private float hp;
     private float maxHP;
@@ -20,6 +23,7 @@ public class Player extends Rectangle {
     private int level;
     private int xp;
     private int xpToNextLevel;
+    private int radius;
 
     public Player(float hp, float maxHP, float healing, int startLevel) {
         this.currentDirection = Direction.RIGHT;
@@ -31,6 +35,9 @@ public class Player extends Rectangle {
         this.level = startLevel;
         this.xp = 0;
         this.xpToNextLevel = 100;
+        this.radius = 100;
+
+        pickupRange = new Circle(getX(), getY(), getRadius());
     }
 
     public void addXp(int xp) {
@@ -52,6 +59,9 @@ public class Player extends Rectangle {
 
     // TODO Fix Movement when using arrow keys and WASD at the same time
     public void playerMovement() {
+        pickupRange.setX(getX() + getWidth() / 2);
+        pickupRange.setY(getY() + getHeight() / 2);
+
         if((Gdx.input.isKeyPressed(Input.Keys.W) && Gdx.input.isKeyPressed(Input.Keys.D)) ||
                 (Gdx.input.isKeyPressed(Input.Keys.UP) && Gdx.input.isKeyPressed(Input.Keys.RIGHT))
         ) {
@@ -181,5 +191,13 @@ public class Player extends Rectangle {
 
     public void setXpToNextLevel(int xpToNextLevel) {
         this.xpToNextLevel = xpToNextLevel;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public Circle getPickupRange() {
+        return pickupRange;
     }
 }

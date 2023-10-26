@@ -5,7 +5,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Array;
@@ -248,7 +250,6 @@ public class DungeonGameScreen implements Screen {
 
     private static void killBullet(Bullet bulletToKill) {
         for(int i = 0; i < bullets.size; i++) {
-
             if(bullets.get(i) == bulletToKill)
                 bullets.removeIndex(i);
         }
@@ -258,7 +259,8 @@ public class DungeonGameScreen implements Screen {
         for (Iterator<XpOrb> iter = xpOrbs.iterator(); iter.hasNext(); ) {
             XpOrb xpOrb = iter.next();
 
-            if(player.overlaps(xpOrb)) {
+            if(xpOrb.overlaps(player.getPickupRange())) {
+                //xpOrb.moveToPlayer(player);
                 iter.remove();
                 player.addXp(xpOrb.getValue());
             }
