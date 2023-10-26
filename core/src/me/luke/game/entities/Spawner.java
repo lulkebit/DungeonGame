@@ -1,6 +1,7 @@
 package me.luke.game.entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
@@ -24,25 +25,32 @@ public class Spawner {
         wave = 1;
     }
 
-    public void spawnerLoop(Rectangle player) {
+    public void spawnerLoop(Player player) {
         if(TimeUtils.nanoTime() - lastSpawnTime > 1000000000L - wave * 10000L)
             spawnEnemy();
 
         for (Enemy enemy : enemies) {
             enemy.move(player);
         }
+
         timeNow = TimeUtils.nanoTime();
 
         if(timeNow >= nextWaveSpawn) {
             nextWaveSpawn += timeBetweenSpawns;
             wave++;
+            spawnBoss();
         }
     }
 
     public void spawnEnemy() {
-        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 15f, 29f, 150);
+        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 15f, 29f, 150, 10);
         enemies.add(enemy);
         lastSpawnTime = TimeUtils.nanoTime();
+    }
+
+    public void spawnBoss() {
+        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 32, 32, 100, 100);
+        enemies.add(boss);
     }
 
     public Array<Enemy> getEnemies() {

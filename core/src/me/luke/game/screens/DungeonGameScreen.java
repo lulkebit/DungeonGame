@@ -39,6 +39,7 @@ public class DungeonGameScreen implements Screen {
     private final Texture bulletDownTexture;
     private final Texture enemyTexture;
     private final Texture xpTexture;
+    private final Texture bossTexture;
 
     private static Player player;
     private static Rectangle spawnPoint;
@@ -62,6 +63,7 @@ public class DungeonGameScreen implements Screen {
         bulletDownTexture = new Texture("bulletDown.png");
         enemyTexture = new Texture("enemy.png");
         xpTexture = new Texture("xp.png");
+        bossTexture = new Texture("boss.png");
 
         player = new Player(100f, 100f, 0.2f, 0);
         player.setWidth(60);
@@ -143,7 +145,10 @@ public class DungeonGameScreen implements Screen {
         }
 
         for(Enemy enemy : spawner.getEnemies()) {
-            game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
+            if(enemy.getClass() == Enemy.class)
+                game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
+            else if(enemy.getClass() == Boss.class)
+                game.batch.draw(bossTexture, enemy.getX(), enemy.getY());
         }
 
         game.font.draw(game.batch, "HP: " + (int) player.getHp(), player.getX(), player.getY() + player.getHeight() + 20);
@@ -228,9 +233,15 @@ public class DungeonGameScreen implements Screen {
             Enemy enemy = iter.next();
 
             if(bullet.overlaps(enemy)) {
-                xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
                 killBullet(bullet);
-                iter.remove();
+                enemy.setHp(enemy.getHp() - bullet.getDmg());
+
+                if(enemy.getHp() <= 0) {
+                    xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
+                    iter.remove();
+                } else {
+                    enemy.hit(player);
+                }
             }
         }
     }
@@ -270,7 +281,7 @@ public class DungeonGameScreen implements Screen {
         else
             dir = player.getCurrentDirection();
 
-        Bullet bullet = new Bullet(dir);
+        Bullet bullet = new Bullet(dir, 10);
         bullet.setX(spawnPoint.getX());
         bullet.setY(spawnPoint.getY());
         bullet.setWidth(12);
@@ -289,6 +300,8 @@ public class DungeonGameScreen implements Screen {
         bulletUpTexture.dispose();
         bulletDownTexture.dispose();
         enemyTexture.dispose();
+        xpTexture.dispose();
+        bossTexture.dispose();
     }
 
     @Override
