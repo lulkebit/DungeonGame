@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.*;
+import me.luke.game.screens.DungeonChestScreen;
 import me.luke.game.screens.DungeonGameOverScreen;
 import me.luke.game.screens.DungeonPauseScreen;
 import me.luke.game.weapons.ranged.bowAndArrow.Arrow;
@@ -64,15 +65,6 @@ public class GameManager {
                 //xpOrb.moveToPlayer(player);
                 iter.remove();
                 player.addXp(xpOrb.getValue());
-            }
-        }
-
-        for(Iterator<Chest> iter = chests.iterator(); iter.hasNext();) {
-            Chest chest = iter.next();
-
-            if(chest.overlaps(player)) {
-                // Chest Screen
-                iter.remove();
             }
         }
     }

@@ -183,6 +183,15 @@ public class DungeonGameScreen implements Screen {
             lastHealTime = TimeUtils.nanoTime();
             player.setHp(player.getHp() + player.getHealing());
         }
+
+        for(Iterator<Chest> iter = chests.iterator(); iter.hasNext();) {
+            Chest chest = iter.next();
+
+            if(chest.overlaps(player)) {
+                game.setScreen(new DungeonChestScreen(game, this, gameManager));
+                iter.remove();
+            }
+        }
     }
 
     @Override

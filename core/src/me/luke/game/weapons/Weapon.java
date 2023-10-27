@@ -11,8 +11,8 @@ public class Weapon extends Rectangle {
     private float projectileSpeed; // The base projectile speed of the weapon.
     private float effectDuration; // The duration of the weapon's effect.
     private float cooldown; // The time required for the weapon to be used again. (millis)
-    private int critMulti; // Damage multiplier to critical hits.
-    private int critChance; // Chance to hit a crit.
+    private float critMulti; // Damage multiplier to critical hits.
+    private float critChance; // Chance to hit a crit.
     private float area; // The base area of the weapon.
     private int amount; // The amount of projectiles fired per use.
     private float projectileInterval; // The time required for an additional projectile to be fired between each Cooldown. (millis)
@@ -80,19 +80,19 @@ public class Weapon extends Rectangle {
         this.cooldown = cooldown;
     }
 
-    public int getCritMulti() {
+    public float getCritMulti() {
         return critMulti;
     }
 
-    public void setCritMulti(int critMulti) {
+    public void setCritMulti(float critMulti) {
         this.critMulti = critMulti;
     }
 
-    public int getCritChance() {
+    public float getCritChance() {
         return critChance;
     }
 
-    public void setCritChance(int critChance) {
+    public void setCritChance(float critChance) {
         this.critChance = critChance;
     }
 

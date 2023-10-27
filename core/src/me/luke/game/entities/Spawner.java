@@ -19,7 +19,7 @@ public class Spawner {
 
     public Spawner() {
         enemies = new Array<>();
-        timeBetweenSpawns = 10000000000L;
+        timeBetweenSpawns = 30000000000L;
         timeNow = TimeUtils.nanoTime();
         nextWaveSpawn = TimeUtils.nanoTime() + timeBetweenSpawns;
         wave = 1;

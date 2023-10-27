@@ -19,12 +19,12 @@ public class Bow extends Weapon {
         setBaseDmg(10f);
         setProjectileSpeed(400);
         setCooldown(400);
-        setCritMulti(0);
-        setCritChance(0);
-        setAmount(3);
-        setProjectileInterval(80);
-        setPierce(1);
-        setKnockback(10);
+        setCritMulti(0); // TODO: Implement this
+        setCritChance(0); // TODO: Implement this
+        setAmount(1); // TODO: Implement this
+        setProjectileInterval(80); // TODO: Implement this
+        setPierce(1); // TODO: Implement this
+        setKnockback(10); // TODO: Implement this
         arrows = new Array<>();
         lastArrowTime = TimeUtils.millis();
         lastIntervalTime = TimeUtils.millis();

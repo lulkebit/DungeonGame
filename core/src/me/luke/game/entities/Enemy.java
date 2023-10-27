@@ -38,8 +38,8 @@ public class Enemy extends Rectangle {
                 (player.getY() + player.getHeight() / 2) - this.getY()
         );
         distance = distance.nor();
-        this.x -= distance.x * (this.speed * 10) * Gdx.graphics.getDeltaTime();
-        this.y -= distance.y * (this.speed * 10) * Gdx.graphics.getDeltaTime();
+        this.x -= distance.x * (this.speed * player.getBow().getKnockback()) * Gdx.graphics.getDeltaTime();
+        this.y -= distance.y * (this.speed * player.getBow().getKnockback()) * Gdx.graphics.getDeltaTime();
     }
 
     public int getDmg() {
