@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.*;
 import me.luke.game.enums.Direction;
+import me.luke.game.manager.GameManager;
+import me.luke.game.weapons.ranged.bowAndArrow.Arrow;
+import me.luke.game.weapons.ranged.bowAndArrow.Bow;
 
 import java.util.Iterator;
 
@@ -27,8 +30,7 @@ public class DungeonGameScreen implements Screen {
     private static final int bulletSpeed = 400;
 
     private static long lastHealTime;
-    private static long lastTimeHit;
-    private static final long hitCD = 100000000;
+
     private static long timeAlive = 0;
     private static final long startTime = TimeUtils.millis();
 
@@ -44,13 +46,11 @@ public class DungeonGameScreen implements Screen {
     private final Texture bossTexture;
     private final Texture chestTexture;
 
-    private static Player player;
-    private static Rectangle spawnPoint;
-    private static Array<Bullet> bullets;
-    private static Array<XpOrb> xpOrbs;
-    private static Array<Chest> chests;
-    private static Spawner spawner;
-    private static Slider slider;
+    private final GameManager gameManager;
+    private final Player player;
+    private final Spawner spawner;
+    private final Array<XpOrb> xpOrbs;
+    private final Array<Chest> chests;
 
     public DungeonGameScreen(final Dungeon game) {
         this.game = game;
@@ -70,27 +70,16 @@ public class DungeonGameScreen implements Screen {
         bossTexture = new Texture("boss.png");
         chestTexture = new Texture("chest.png");
 
-        player = new Player(100f, 100f, 0.2f, 0);
-        player.setWidth(60);
-        player.setHeight(60);
-        player.setX(1920f / 2f - player.getWidth() / 2f);
-        player.setY(1080f / 2f - player.getHeight() / 2f);
 
         lastHealTime = TimeUtils.nanoTime();
 
-        spawnPoint = new Rectangle();
-        spawnPoint.setWidth(1);
-        spawnPoint.setHeight(1);
-        spawnPoint.setX(player.getX() + player.getWidth());
-        spawnPoint.setY(player.getY() + player.getHeight() / 2);
 
+        gameManager = new GameManager(game);
+        player = gameManager.getPlayer();
+        spawner = gameManager.getSpawner();
+        xpOrbs = gameManager.getXpOrbs();
+        chests = gameManager.getChests();
 
-        lastTimeHit = TimeUtils.nanoTime();
-
-        bullets = new Array<>();
-        spawner = new Spawner();
-        xpOrbs = new Array<>();
-        chests = new Array<>();
     }
 
     @Override
@@ -108,40 +97,41 @@ public class DungeonGameScreen implements Screen {
         game.batch.draw(bgTexture, 0 , 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         if(player.getPreviousDirection() == Direction.RIGHT || player.getCurrentDirection() == Direction.RIGHT || player.getCurrentDirection() == Direction.TOPRIGHT || player.getCurrentDirection() == Direction.DOWNRIGHT) {
-            game.batch.draw(playerRightTexture, player.x, player.y);
-            spawnPoint.setX(player.getX() + player.getWidth());
-            spawnPoint.setY(player.getY() + player.getHeight() / 2);
+            game.batch.draw(playerRightTexture, player.getX(), player.getY());
+            player.getSpawnPoint().setX(player.getX() + player.getWidth());
+            player.getSpawnPoint().setY(player.getY() + player.getHeight() / 2);
         } else if (player.getPreviousDirection() == Direction.LEFT || player.getCurrentDirection() == Direction.LEFT || player.getCurrentDirection() == Direction.TOPLEFT || player.getCurrentDirection() == Direction.DOWNLEFT) {
-            game.batch.draw(playerLeftTexture, player.x, player.y);
-            spawnPoint.setX(player.getX());
-            spawnPoint.setY(player.getY() + player.getHeight() / 2);
+            game.batch.draw(playerLeftTexture, player.getX(), player.getY());
+            player.getSpawnPoint().setX(player.getX());
+            player.getSpawnPoint().setY(player.getY() + player.getHeight() / 2);
         }
 
         if(player.getCurrentDirection() == Direction.DOWN) {
-            spawnPoint.setX(player.getX() + player.getWidth() / 2);
-            spawnPoint.setY(player.getY());
+            player.getSpawnPoint().setX(player.getX() + player.getWidth() / 2);
+            player.getSpawnPoint().setY(player.getY());
         } else if(player.getCurrentDirection() == Direction.UP) {
-            spawnPoint.setX(player.getX() + player.getWidth() / 2);
-            spawnPoint.setY(player.getY() + player.getHeight());
+            player.getSpawnPoint().setX(player.getX() + player.getWidth() / 2);
+            player.getSpawnPoint().setY(player.getY() + player.getHeight());
         }
 
+        Bow bow = player.getBow();
 
-        for(Bullet bullet : bullets) {
-            switch (bullet.getDirection()) {
+        for(Arrow arrow : bow.getArrows()) {
+            switch (arrow.getDirection()) {
                 case UP:
-                    game.batch.draw(bulletUpTexture, bullet.x, bullet.y);
+                    game.batch.draw(arrow.getTextureUp(), arrow.x, arrow.y);
                     break;
 
                 case DOWN:
-                    game.batch.draw(bulletDownTexture, bullet.x, bullet.y);
-                    break;
-
-                case RIGHT:
-                    game.batch.draw(bulletRightTexture, bullet.x, bullet.y);
+                    game.batch.draw(arrow.getTextureDown(), arrow.x, arrow.y);
                     break;
 
                 case LEFT:
-                    game.batch.draw(bulletLeftTexture, bullet.x, bullet.y);
+                    game.batch.draw(arrow.getTextureLeft(), arrow.x, arrow.y);
+                    break;
+
+                case RIGHT:
+                    game.batch.draw(arrow.getTextureRight(), arrow.x, arrow.y);
                     break;
             }
         }
@@ -184,6 +174,7 @@ public class DungeonGameScreen implements Screen {
         game.batch.end();
 
         gameLoop();
+        gameManager.main();
     }
 
     private void gameLoop() {
@@ -201,116 +192,10 @@ public class DungeonGameScreen implements Screen {
         player.playerMovement();
         spawner.spawnerLoop(player);
 
-        if(TimeUtils.nanoTime() - lastBulletTime > 300000000)
-            spawnBullet();
         if(TimeUtils.nanoTime() - lastHealTime > 1000000000 && player.getHp() < player.getMaxHP()) {
             lastHealTime = TimeUtils.nanoTime();
             player.setHp(player.getHp() + player.getHealing());
         }
-
-        for (Iterator<Bullet> iter = bullets.iterator(); iter.hasNext(); ) {
-            Bullet bullet = iter.next();
-
-            switch (bullet.getDirection()) {
-                case UP:
-                    bullet.y += bulletSpeed * Gdx.graphics.getDeltaTime();
-                    break;
-
-                case DOWN:
-                    bullet.y -= bulletSpeed * Gdx.graphics.getDeltaTime();
-                    break;
-
-                case RIGHT:
-                    bullet.x += bulletSpeed * Gdx.graphics.getDeltaTime();
-                    break;
-
-                case LEFT:
-                    bullet.x -= bulletSpeed * Gdx.graphics.getDeltaTime();
-                    break;
-            }
-
-            if(!(bullet.y + 12 < 1080) || !(bullet.y + 12 > 0) || !(bullet.x + 12 < 1920) || !(bullet.x + 12 > 0)) {
-                iter.remove();
-            }
-            hitCheck(spawner.getEnemies(), bullet);
-        }
-
-        playerOrbCheck();
-    }
-
-    private static void hitCheck(Array<Enemy> enemies, Bullet bullet) {
-        for (Iterator<Enemy> iter = enemies.iterator(); iter.hasNext(); ) {
-            Enemy enemy = iter.next();
-
-            if(bullet.overlaps(enemy)) {
-                killBullet(bullet);
-                enemy.setHp(enemy.getHp() - bullet.getDmg());
-
-                if(enemy.getHp() <= 0) {
-                    if(enemy.getClass() == Boss.class) {
-                        chests.add(new Chest(enemy.getX(), enemy.getY(), 18, 14));
-                    } else if(enemy.getClass() == Enemy.class) {
-                        xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
-                    }
-                    iter.remove();
-                } else {
-                    enemy.hit(player);
-                }
-            }
-        }
-    }
-
-    private static void killBullet(Bullet bulletToKill) {
-        for(int i = 0; i < bullets.size; i++) {
-            if(bullets.get(i) == bulletToKill)
-                bullets.removeIndex(i);
-        }
-    }
-
-    private static void playerOrbCheck() {
-        for (Iterator<XpOrb> iter = xpOrbs.iterator(); iter.hasNext(); ) {
-            XpOrb xpOrb = iter.next();
-
-            if(xpOrb.overlaps(player.getPickupRange())) {
-                //xpOrb.moveToPlayer(player);
-                iter.remove();
-                player.addXp(xpOrb.getValue());
-            }
-        }
-
-        for(Iterator<Chest> iter = chests.iterator(); iter.hasNext();) {
-            Chest chest = iter.next();
-
-            if(chest.overlaps(player)) {
-                // Chest Screen
-                iter.remove();
-            }
-        }
-    }
-
-    public static void hitPlayer(int dmg) {
-        if(TimeUtils.nanoTime() - lastTimeHit > hitCD) {
-            lastTimeHit = TimeUtils.nanoTime();
-            player.setHp(player.getHp() - dmg);
-        }
-    }
-
-    private static void spawnBullet() {
-        Direction dir;
-        if(player.getCurrentDirection() == Direction.TOPRIGHT || player.getCurrentDirection() == Direction.DOWNRIGHT)
-            dir = Direction.RIGHT;
-        else if(player.getCurrentDirection() == Direction.TOPLEFT || player.getCurrentDirection() == Direction.DOWNLEFT)
-            dir = Direction.LEFT;
-        else
-            dir = player.getCurrentDirection();
-
-        Bullet bullet = new Bullet(dir, 10);
-        bullet.setX(spawnPoint.getX());
-        bullet.setY(spawnPoint.getY());
-        bullet.setWidth(12);
-        bullet.setHeight(12);
-        bullets.add(bullet);
-        lastBulletTime = TimeUtils.nanoTime();
     }
 
     @Override

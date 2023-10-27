@@ -4,8 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-import static me.luke.game.screens.DungeonGameScreen.hitPlayer;
-
 public class Enemy extends Rectangle {
     private int speed;
     private int dmg = 2;
@@ -31,8 +29,6 @@ public class Enemy extends Rectangle {
         if(!this.overlaps(player)) {
             this.x += distance.x * this.speed * Gdx.graphics.getDeltaTime();
             this.y += distance.y * this.speed * Gdx.graphics.getDeltaTime();
-        } else {
-            hitPlayer(dmg);
         }
     }
 

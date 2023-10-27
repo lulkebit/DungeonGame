@@ -4,17 +4,21 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.Array;
 import me.luke.game.Dungeon;
 import me.luke.game.enums.Direction;
 import me.luke.game.screens.DungeonGameScreen;
 import me.luke.game.screens.DungeonLevelUpScreen;
 import me.luke.game.screens.DungeonPauseScreen;
+import me.luke.game.weapons.Weapon;
+import me.luke.game.weapons.ranged.bowAndArrow.Bow;
 
 public class Player extends Rectangle {
     private Direction currentDirection;
     private Direction previousDirection;
 
     private Circle pickupRange;
+    private Rectangle spawnPoint;
 
     private int speed;
     private float hp;
@@ -24,6 +28,9 @@ public class Player extends Rectangle {
     private int xp;
     private int xpToNextLevel;
     private int radius;
+
+    private Array<Weapon> weapons;
+    private Bow bow;
 
     public Player(float hp, float maxHP, float healing, int startLevel) {
         this.currentDirection = Direction.RIGHT;
@@ -38,6 +45,15 @@ public class Player extends Rectangle {
         this.radius = 100;
 
         pickupRange = new Circle(getX(), getY(), getRadius());
+        spawnPoint = new Rectangle();
+        spawnPoint.setWidth(1);
+        spawnPoint.setHeight(1);
+        spawnPoint.setX(getX() + getWidth());
+        spawnPoint.setY(getY() + getHeight() / 2);
+
+        weapons = new Array<>();
+        bow = new Bow(this);
+        weapons.add(bow);
     }
 
     public void addXp(int xp) {
@@ -199,5 +215,17 @@ public class Player extends Rectangle {
 
     public Circle getPickupRange() {
         return pickupRange;
+    }
+
+    public Rectangle getSpawnPoint() {
+        return spawnPoint;
+    }
+
+    public Array<Weapon> getWeapons() {
+        return weapons;
+    }
+
+    public Bow getBow() {
+        return bow;
     }
 }
