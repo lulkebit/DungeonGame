@@ -22,17 +22,17 @@ public class GameManager {
     private static long lastTimeHit;
     private static final long hitCD = 100000000;
 
-    private Array<XpOrb> xpOrbs;
-    private Array<Chest> chests;
+    private final Array<XpOrb> xpOrbs;
+    private final Array<Chest> chests;
 
-    private Bow bow;
+    private final Bow bow;
 
     public GameManager(final Dungeon game) {
         this.game = game;
 
         player = new Player(100f, 100f, 0.2f, 0);
-        player.setWidth(60);
-        player.setHeight(60);
+        player.setWidth(50);
+        player.setHeight(64);
         player.setX(1920f / 2f - player.getWidth() / 2f);
         player.setY(1080f / 2f - player.getHeight() / 2f);
 

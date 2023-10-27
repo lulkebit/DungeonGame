@@ -9,27 +9,36 @@ import me.luke.game.weapons.Weapon;
 import java.util.Iterator;
 
 public class Bow extends Weapon {
-    private Array<Arrow> arrows;
+    private final Array<Arrow> arrows;
     private static long lastArrowTime;
+    private static long lastIntervalTime;
 
-    public Bow(Player player) {
+    public Bow() {
         super("Bow", "enemy.png");
         setMaxLvl(8);
         setBaseDmg(10f);
         setProjectileSpeed(400);
-        setCooldown(300);
+        setCooldown(400);
         setCritMulti(0);
         setCritChance(0);
-        setAmount(1);
+        setAmount(3);
         setProjectileInterval(80);
         setPierce(1);
         setKnockback(10);
         arrows = new Array<>();
         lastArrowTime = TimeUtils.millis();
+        lastIntervalTime = TimeUtils.millis();
     }
 
     public void action(Player player) {
-        spawnArrow(player);
+        if(TimeUtils.timeSinceMillis(lastArrowTime) > getCooldown()) {
+            spawnArrow(player);
+//            for(int i = 0; i < getAmount(); i++) {
+//                if(TimeUtils.timeSinceMillis(lastIntervalTime) > getProjectileInterval()) {
+//                    spawnArrow(player);
+//                }
+//            }
+        }
 
         for (Iterator<Arrow> iter = arrows.iterator(); iter.hasNext(); ) {
             Arrow arrow = iter.next();
@@ -41,9 +50,6 @@ public class Bow extends Weapon {
     }
 
     private void spawnArrow(Player player) {
-        if(TimeUtils.millis() - lastArrowTime < getCooldown())
-            return;
-
         Direction dir;
         if(player.getCurrentDirection() == Direction.TOPRIGHT || player.getCurrentDirection() == Direction.DOWNRIGHT)
             dir = Direction.RIGHT;
@@ -59,6 +65,7 @@ public class Bow extends Weapon {
         arrow.setHeight(12);
         arrows.add(arrow);
         lastArrowTime = TimeUtils.millis();
+        lastIntervalTime = TimeUtils.millis();
     }
 
 

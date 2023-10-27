@@ -25,22 +25,13 @@ import java.util.Iterator;
 public class DungeonGameScreen implements Screen {
     private final Dungeon game;
     private final OrthographicCamera camera;
-
-    private static long lastBulletTime;
-    private static final int bulletSpeed = 400;
-
     private static long lastHealTime;
 
-    private static long timeAlive = 0;
     private static final long startTime = TimeUtils.millis();
 
     private final Texture bgTexture;
     private final Texture playerRightTexture;
     private final Texture playerLeftTexture;
-    private final Texture bulletRightTexture;
-    private final Texture bulletLeftTexture;
-    private final Texture bulletUpTexture;
-    private final Texture bulletDownTexture;
     private final Texture enemyTexture;
     private final Texture xpTexture;
     private final Texture bossTexture;
@@ -61,10 +52,6 @@ public class DungeonGameScreen implements Screen {
         bgTexture = new Texture("background.png");
         playerRightTexture = new Texture("playerRight.png");
         playerLeftTexture = new Texture("playerLeft.png");
-        bulletRightTexture = new Texture("bulletRight.png");
-        bulletLeftTexture = new Texture("bulletLeft.png");
-        bulletUpTexture = new Texture("bulletUp.png");
-        bulletDownTexture = new Texture("bulletDown.png");
         enemyTexture = new Texture("enemy.png");
         xpTexture = new Texture("xp.png");
         bossTexture = new Texture("boss.png");
@@ -87,7 +74,7 @@ public class DungeonGameScreen implements Screen {
         ScreenUtils.clear(0, 0, 0.2f, 1);
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
-        timeAlive = (TimeUtils.millis() - startTime) / 1000;
+        long timeAlive = (TimeUtils.millis() - startTime) / 1000;
         long minutes = (timeAlive % 3600) / 60;
         long seconds = timeAlive % 60;
         String timeString = String.format("%02d:%02d", minutes, seconds);
@@ -203,10 +190,6 @@ public class DungeonGameScreen implements Screen {
         playerRightTexture.dispose();
         playerLeftTexture.dispose();
         bgTexture.dispose();
-        bulletRightTexture.dispose();
-        bulletLeftTexture.dispose();
-        bulletUpTexture.dispose();
-        bulletDownTexture.dispose();
         enemyTexture.dispose();
         xpTexture.dispose();
         bossTexture.dispose();

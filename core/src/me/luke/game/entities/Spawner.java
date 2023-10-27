@@ -12,21 +12,21 @@ import java.util.Iterator;
 public class Spawner {
     private static Array<Enemy> enemies;
     private long lastSpawnTime;
-    private long timeBetweenSpawns;
+    private final long timeBetweenSpawns;
     private long timeNow;
     private long nextWaveSpawn;
-    private int wave;
+    private long wave;
 
     public Spawner() {
         enemies = new Array<>();
-        timeBetweenSpawns = 30000000000L;
+        timeBetweenSpawns = 10000000000L;
         timeNow = TimeUtils.nanoTime();
         nextWaveSpawn = TimeUtils.nanoTime() + timeBetweenSpawns;
         wave = 1;
     }
 
     public void spawnerLoop(Player player) {
-        if(TimeUtils.nanoTime() - lastSpawnTime > 1000000000L - wave * 10000L)
+        if(TimeUtils.nanoTime() - lastSpawnTime + (wave * 1000000L)> 1000000000L)
             spawnEnemy();
 
         for (Enemy enemy : enemies) {
@@ -61,7 +61,7 @@ public class Spawner {
         return lastSpawnTime;
     }
 
-    public int getWave() {
+    public long getWave() {
         return wave;
     }
 

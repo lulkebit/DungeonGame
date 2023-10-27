@@ -52,7 +52,7 @@ public class Player extends Rectangle {
         spawnPoint.setY(getY() + getHeight() / 2);
 
         weapons = new Array<>();
-        bow = new Bow(this);
+        bow = new Bow();
         weapons.add(bow);
     }
 
