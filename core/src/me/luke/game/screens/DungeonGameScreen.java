@@ -42,11 +42,13 @@ public class DungeonGameScreen implements Screen {
     private final Texture enemyTexture;
     private final Texture xpTexture;
     private final Texture bossTexture;
+    private final Texture chestTexture;
 
     private static Player player;
     private static Rectangle spawnPoint;
     private static Array<Bullet> bullets;
     private static Array<XpOrb> xpOrbs;
+    private static Array<Chest> chests;
     private static Spawner spawner;
     private static Slider slider;
 
@@ -66,6 +68,7 @@ public class DungeonGameScreen implements Screen {
         enemyTexture = new Texture("enemy.png");
         xpTexture = new Texture("xp.png");
         bossTexture = new Texture("boss.png");
+        chestTexture = new Texture("chest.png");
 
         player = new Player(100f, 100f, 0.2f, 0);
         player.setWidth(60);
@@ -87,6 +90,7 @@ public class DungeonGameScreen implements Screen {
         bullets = new Array<>();
         spawner = new Spawner();
         xpOrbs = new Array<>();
+        chests = new Array<>();
     }
 
     @Override
@@ -143,7 +147,11 @@ public class DungeonGameScreen implements Screen {
         }
 
         for(XpOrb xpOrb : xpOrbs) {
-            game.batch.draw(xpTexture, xpOrb.x, xpOrb.y);
+            game.batch.draw(xpTexture, xpOrb.getX(), xpOrb.getY());
+        }
+
+        for(Chest chest : chests) {
+            game.batch.draw(chestTexture, chest.getX(), chest.getY());
         }
 
         for(Enemy enemy : spawner.getEnemies()) {
@@ -227,7 +235,7 @@ public class DungeonGameScreen implements Screen {
             hitCheck(spawner.getEnemies(), bullet);
         }
 
-        playerOrbCheck(xpOrbs, player);
+        playerOrbCheck();
     }
 
     private static void hitCheck(Array<Enemy> enemies, Bullet bullet) {
@@ -239,7 +247,11 @@ public class DungeonGameScreen implements Screen {
                 enemy.setHp(enemy.getHp() - bullet.getDmg());
 
                 if(enemy.getHp() <= 0) {
-                    xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
+                    if(enemy.getClass() == Boss.class) {
+                        chests.add(new Chest(enemy.getX(), enemy.getY(), 18, 14));
+                    } else if(enemy.getClass() == Enemy.class) {
+                        xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
+                    }
                     iter.remove();
                 } else {
                     enemy.hit(player);
@@ -255,7 +267,7 @@ public class DungeonGameScreen implements Screen {
         }
     }
 
-    private static void playerOrbCheck(Array<XpOrb> xpOrbs, Player player) {
+    private static void playerOrbCheck() {
         for (Iterator<XpOrb> iter = xpOrbs.iterator(); iter.hasNext(); ) {
             XpOrb xpOrb = iter.next();
 
@@ -263,6 +275,15 @@ public class DungeonGameScreen implements Screen {
                 //xpOrb.moveToPlayer(player);
                 iter.remove();
                 player.addXp(xpOrb.getValue());
+            }
+        }
+
+        for(Iterator<Chest> iter = chests.iterator(); iter.hasNext();) {
+            Chest chest = iter.next();
+
+            if(chest.overlaps(player)) {
+                // Chest Screen
+                iter.remove();
             }
         }
     }
@@ -304,6 +325,7 @@ public class DungeonGameScreen implements Screen {
         enemyTexture.dispose();
         xpTexture.dispose();
         bossTexture.dispose();
+        chestTexture.dispose();
     }
 
     @Override
