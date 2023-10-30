@@ -17,7 +17,7 @@ public class Bow extends Weapon {
 
     public Bow() {
         super("Bow", "enemy.png");
-        setMaxLvl(8);
+        setMaxLvl(100);
         setBaseDmg(12f);
         setProjectileSpeed(600);
         setCooldown(800);
@@ -25,7 +25,7 @@ public class Bow extends Weapon {
         setCritChance(0);
         setAmount(1);
         setProjectileInterval(50);
-        setPierce(1); // TODO: Implement this
+        setPierce(1);
         setKnockback(10);
         arrows = new Array<>();
         lastArrowTime = TimeUtils.millis();
@@ -60,7 +60,7 @@ public class Bow extends Weapon {
         else
             dir = player.getCurrentDirection();
 
-        Arrow arrow = new Arrow(dir, getProjectileSpeed());
+        Arrow arrow = new Arrow(dir, getProjectileSpeed(), getPierce());
         arrow.setX(player.getSpawnPoint().getX());
         arrow.setY(player.getSpawnPoint().getY());
         arrow.setWidth(12);

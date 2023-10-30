@@ -11,8 +11,9 @@ public class Projectile extends Rectangle {
     private final Texture textureLeft;
     private final Texture textureRight;
     private float speed;
+    private int pierceCount;
 
-    public Projectile(Direction direction, String textureUpPath, String textureDownPath, String textureLeftPath, String textureRightPath, float speed) {
+    public Projectile(Direction direction, String textureUpPath, String textureDownPath, String textureLeftPath, String textureRightPath, float speed, int pierceCount) {
         this.direction = direction;
         this.textureUp = new Texture(textureUpPath);
         this.textureDown = new Texture(textureDownPath);
@@ -20,6 +21,7 @@ public class Projectile extends Rectangle {
         this.textureRight = new Texture(textureRightPath);
 
         setSpeed(speed);
+        setPierceCount(pierceCount);
     }
 
     public Direction getDirection() {
@@ -48,5 +50,13 @@ public class Projectile extends Rectangle {
 
     public Texture getTextureRight() {
         return textureRight;
+    }
+
+    public int getPierceCount() {
+        return pierceCount;
+    }
+
+    public void setPierceCount(int pierceCount) {
+        this.pierceCount = pierceCount;
     }
 }

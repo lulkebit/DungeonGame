@@ -5,8 +5,8 @@ import me.luke.game.enums.Direction;
 import me.luke.game.weapons.Projectile;
 
 public class Arrow extends Projectile {
-    public Arrow(Direction direction, float speed) { // TODO: Disponse these textures (Memory Leaking)
-        super(direction, "bulletUp.png", "bulletDown.png", "bulletLeft.png", "bulletRight.png", speed);
+    public Arrow(Direction direction, float speed, int pierceCount) { // TODO: Disponse these textures (Memory Leaking)
+        super(direction, "bulletUp.png", "bulletDown.png", "bulletLeft.png", "bulletRight.png", speed, pierceCount);
     }
 
     public void move() {

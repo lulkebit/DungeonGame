@@ -77,7 +77,11 @@ public class GameManager {
             Enemy enemy = iter.next();
 
             if(arrow.overlaps(enemy)) {
-                killarrow(arrow);
+                if(arrow.getPierceCount() <= 1)
+                    killarrow(arrow);
+                else
+                    arrow.setPierceCount(arrow.getPierceCount() - 1);
+
 
                 enemy.setHp((int) (randObj.nextFloat() <= bow.getCritChance() ? enemy.getHp() - bow.getBaseDmg() * bow.getCritMulti() : enemy.getHp() - bow.getBaseDmg()));
 
