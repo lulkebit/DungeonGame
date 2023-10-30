@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.manager.GameManager;
@@ -39,6 +40,8 @@ public class DungeonChestScreen implements Screen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0.2f, 0, 0.2f, 1);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
 
         camera.update();
         game.batch.setProjectionMatrix(camera.combined);
