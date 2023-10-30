@@ -13,6 +13,7 @@ import me.luke.game.weapons.ranged.bowAndArrow.Arrow;
 import me.luke.game.weapons.ranged.bowAndArrow.Bow;
 
 import java.util.Iterator;
+import java.util.Random;
 
 public class GameManager {
     final Dungeon game;
@@ -27,6 +28,7 @@ public class GameManager {
     private final Array<Chest> chests;
 
     private final Bow bow;
+    private final Random randObj;
 
     public GameManager(final Dungeon game) {
         this.game = game;
@@ -44,6 +46,7 @@ public class GameManager {
         spawner = new Spawner();
 
         bow = player.getBow();
+        randObj = new Random();
     }
 
     public void main() {
@@ -75,7 +78,8 @@ public class GameManager {
 
             if(arrow.overlaps(enemy)) {
                 killarrow(arrow);
-                enemy.setHp((int) (enemy.getHp() - bow.getBaseDmg()));
+
+                enemy.setHp((int) (randObj.nextFloat() <= bow.getCritChance() ? enemy.getHp() - bow.getBaseDmg() * bow.getCritMulti() : enemy.getHp() - bow.getBaseDmg()));
 
                 if(enemy.getHp() <= 0) {
                     if(enemy.getClass() == Boss.class) {
