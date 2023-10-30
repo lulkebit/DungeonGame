@@ -15,7 +15,7 @@ public class DungeonChestScreen implements Screen {
     final DungeonGameScreen gameScreen;
     OrthographicCamera camera;
 
-    private int[] array = new int[] { 0, 1, 2, 3, 4, 5 };
+    private int[] array = new int[] { 0, 1, 2, 3, 4, 5, 6 };
     private String upgrade;
 
     GameManager gameManager;
@@ -56,37 +56,48 @@ public class DungeonChestScreen implements Screen {
     }
 
     public void randomUpgrade() {
-        switch (getRandom(array)) {
-            case 0:
-                upgrade = "CritMulti";
-                gameManager.getPlayer().getBow().setCritMulti(gameManager.getPlayer().getBow().getCritMulti() + 0.2f);
-                break;
+        if(gameManager.getPlayer().getBow().getLvl() < gameManager.getPlayer().getBow().getMaxLvl()) {
+            switch (getRandom(array)) {
+                case 0:
+                    upgrade = "CritMulti";
+                    gameManager.getPlayer().getBow().setCritMulti(gameManager.getPlayer().getBow().getCritMulti() + 0.2f);
+                    break;
 
-            case 1:
-                upgrade = "CritChance";
-                gameManager.getPlayer().getBow().setCritChance(gameManager.getPlayer().getBow().getCritChance() + 0.02f);
-                break;
+                case 1:
+                    upgrade = "CritChance";
+                    gameManager.getPlayer().getBow().setCritChance(gameManager.getPlayer().getBow().getCritChance() + 0.02f);
+                    break;
 
-            case 2:
-                upgrade = "Amount";
-                gameManager.getPlayer().getBow().setAmount(gameManager.getPlayer().getBow().getAmount() + 1);
-                break;
+                case 2:
+                    upgrade = "Amount";
+                    gameManager.getPlayer().getBow().setAmount(gameManager.getPlayer().getBow().getAmount() + 1);
+                    break;
 
-            case 3:
-                upgrade = "Interval";
-                gameManager.getPlayer().getBow().setProjectileInterval(gameManager.getPlayer().getBow().getProjectileInterval() - 5f);
-                break;
+                case 3:
+                    upgrade = "Interval";
+                    gameManager.getPlayer().getBow().setProjectileInterval(gameManager.getPlayer().getBow().getProjectileInterval() - 5f);
+                    break;
 
-            case 4:
-                upgrade = "Pierce";
-                gameManager.getPlayer().getBow().setPierce(gameManager.getPlayer().getBow().getPierce() + 1);
-                break;
+                case 4:
+                    upgrade = "Pierce";
+                    gameManager.getPlayer().getBow().setPierce(gameManager.getPlayer().getBow().getPierce() + 1);
+                    break;
 
-            case 5:
-                upgrade = "Knockback";
-                gameManager.getPlayer().getBow().setKnockback(gameManager.getPlayer().getBow().getKnockback() + 8);
-                break;
+                case 5:
+                    upgrade = "Knockback";
+                    gameManager.getPlayer().getBow().setKnockback(gameManager.getPlayer().getBow().getKnockback() + 8);
+                    break;
+
+                case 6:
+                    upgrade = "Cooldown";
+                    gameManager.getPlayer().getBow().setCooldown(gameManager.getPlayer().getBow().getCooldown() - 10);
+                    break;
+            }
+            gameManager.getPlayer().getBow().setLvl(gameManager.getPlayer().getBow().getLvl() + 1);
+        } else {
+            upgrade = "MaxLevelReached";
         }
+
     }
 
     private static int getRandom(int[] array) {
