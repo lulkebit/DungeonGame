@@ -43,13 +43,13 @@ public class Spawner {
     }
 
     public void spawnEnemy() {
-        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 24f, 31f, 150, 10);
+        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 24f, 31f, 150, 10 + (int) wave);
         enemies.add(enemy);
         lastSpawnTime = TimeUtils.nanoTime();
     }
 
     public void spawnBoss() {
-        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 100, 100);
+        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 100, 100 + (int) wave * 2);
         enemies.add(boss);
     }
 
