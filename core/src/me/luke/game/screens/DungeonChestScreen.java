@@ -16,7 +16,7 @@ public class DungeonChestScreen implements Screen {
     final DungeonGameScreen gameScreen;
     OrthographicCamera camera;
 
-    private int[] array = new int[] { 0, 1, 2, 3, 4, 5, 6 };
+    private int[] array = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
     private String upgrade;
 
     GameManager gameManager;
@@ -58,7 +58,7 @@ public class DungeonChestScreen implements Screen {
         }
     }
 
-    public void randomUpgrade() {
+    private void randomUpgrade() {
         if(gameManager.getPlayer().getBow().getLvl() < gameManager.getPlayer().getBow().getMaxLvl()) {
             switch (getRandom(array)) {
                 case 0:
@@ -94,6 +94,11 @@ public class DungeonChestScreen implements Screen {
                 case 6:
                     upgrade = "Cooldown";
                     gameManager.getPlayer().getBow().setCooldown(gameManager.getPlayer().getBow().getCooldown() - 10);
+                    break;
+
+                case 7:
+                    upgrade = "BaseDmg";
+                    gameManager.getPlayer().getBow().setBaseDmg(gameManager.getPlayer().getBow().getBaseDmg() + 6);
                     break;
             }
             gameManager.getPlayer().getBow().setLvl(gameManager.getPlayer().getBow().getLvl() + 1);

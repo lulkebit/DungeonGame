@@ -175,7 +175,7 @@ public class DungeonGameScreen implements Screen {
         }
 
         if(player.getXp() >= player.getXpToNextLevel())
-            player.levelUp(game, this);
+            player.levelUp(game, this, gameManager);
 
         player.playerMovement();
         spawner.spawnerLoop(player);

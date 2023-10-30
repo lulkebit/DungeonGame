@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import me.luke.game.Dungeon;
 import me.luke.game.enums.Direction;
+import me.luke.game.manager.GameManager;
 import me.luke.game.screens.DungeonGameScreen;
 import me.luke.game.screens.DungeonLevelUpScreen;
 import me.luke.game.screens.DungeonPauseScreen;
@@ -60,7 +61,7 @@ public class Player extends Rectangle {
         this.xp += xp;
     }
 
-    public void levelUp(final Dungeon game, final DungeonGameScreen gameScreen) {
+    public void levelUp(final Dungeon game, DungeonGameScreen gameScreen, GameManager gameManager) {
         setXp(getXp() - getXpToNextLevel());
         setLevel(getLevel() + 1);
         setXpToNextLevel(getXpToNextLevel() + 2);
@@ -70,7 +71,7 @@ public class Player extends Rectangle {
         else if(getHp() > getMaxHP() - 4)
             setHp(getMaxHP());
 
-        game.setScreen(new DungeonLevelUpScreen(game, gameScreen));
+        game.setScreen(new DungeonLevelUpScreen(game, gameScreen, gameManager));
     }
 
     // TODO Fix Movement when using arrow keys and WASD at the same time
