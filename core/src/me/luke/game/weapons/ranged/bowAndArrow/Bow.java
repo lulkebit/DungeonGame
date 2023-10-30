@@ -19,12 +19,12 @@ public class Bow extends Weapon {
         super("Bow", "enemy.png");
         setMaxLvl(8);
         setBaseDmg(12f);
-        setProjectileSpeed(400);
-        setCooldown(400);
+        setProjectileSpeed(600);
+        setCooldown(800);
         setCritMulti(0);
         setCritChance(0);
-        setAmount(1); // TODO: Implement this
-        setProjectileInterval(40); // TODO: Implement this
+        setAmount(1);
+        setProjectileInterval(50);
         setPierce(1); // TODO: Implement this
         setKnockback(10);
         arrows = new Array<>();
@@ -33,7 +33,6 @@ public class Bow extends Weapon {
     }
 
     public void action(Player player) {
-
         if(TimeUtils.timeSinceMillis(lastIntervalTime) > getProjectileInterval() && i < getAmount()) {
             spawnArrow(player);
             lastIntervalTime = TimeUtils.millis();
