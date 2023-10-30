@@ -86,6 +86,7 @@ public class GameManager {
                         chests.add(new Chest(enemy.getX(), enemy.getY(), 18, 14));
                     } else if(enemy.getClass() == Enemy.class) {
                         xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
+                        spawner.setEnemyCount(spawner.getEnemyCount() - 1);
                     }
                     iter.remove();
                 } else {

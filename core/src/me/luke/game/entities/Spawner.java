@@ -16,13 +16,17 @@ public class Spawner {
     private long timeNow;
     private long nextWaveSpawn;
     private long wave;
+    private int maxEnemies;
+    private int enemyCount;
 
     public Spawner() {
         enemies = new Array<>();
-        timeBetweenSpawns = 30000000000L;
+        timeBetweenSpawns = 90000000000L;
         timeNow = TimeUtils.nanoTime();
         nextWaveSpawn = TimeUtils.nanoTime() + timeBetweenSpawns;
         wave = 1;
+        maxEnemies = 15;
+        enemyCount = 0;
     }
 
     public void spawnerLoop(Player player) {
@@ -38,18 +42,22 @@ public class Spawner {
         if(timeNow >= nextWaveSpawn) {
             nextWaveSpawn += timeBetweenSpawns;
             wave++;
+            maxEnemies++;
             spawnBoss();
         }
     }
 
     public void spawnEnemy() {
-        Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 24f, 31f, 150, 10 + (int) wave);
-        enemies.add(enemy);
-        lastSpawnTime = TimeUtils.nanoTime();
+        if(enemyCount < maxEnemies) {
+            Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 24f, 31f, 80, 10 + (int) wave);
+            enemies.add(enemy);
+            enemyCount++;
+            lastSpawnTime = TimeUtils.nanoTime();
+        }
     }
 
     public void spawnBoss() {
-        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 100, 100 + (int) wave * 2);
+        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 60, 100 + (int) wave * 2);
         enemies.add(boss);
     }
 
@@ -75,5 +83,17 @@ public class Spawner {
 
     public long getTimeNow() {
         return timeNow;
+    }
+
+    public int getEnemyCount() {
+        return enemyCount;
+    }
+
+    public int getMaxEnemies() {
+        return maxEnemies;
+    }
+
+    public void setEnemyCount(int enemyCount) {
+        this.enemyCount = enemyCount;
     }
 }

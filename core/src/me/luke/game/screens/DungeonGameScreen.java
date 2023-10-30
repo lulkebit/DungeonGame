@@ -158,6 +158,8 @@ public class DungeonGameScreen implements Screen {
         game.font.draw(game.batch, "TimeNow: " + spawner.getTimeNow(), 0, 200 + offset);
         game.font.draw(game.batch, "TimeBetweenSpawns: " + spawner.getTimeBetweenSpawns(), 0, 180 + offset);
         game.font.draw(game.batch, "Amount: " + bow.getAmount(), 0, 160 + offset);
+        game.font.draw(game.batch, "EnemyCount: " + spawner.getEnemyCount(), 0, 140 + offset);
+        game.font.draw(game.batch, "MaxEnemyCount: " + spawner.getMaxEnemies(), 0, 120 + offset);
         // ----------------------- DEBUG ----------------------- //
         game.batch.end();
 
