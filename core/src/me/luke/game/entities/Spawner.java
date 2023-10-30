@@ -49,7 +49,7 @@ public class Spawner {
     }
 
     public void spawnBoss() {
-        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 32, 32, 100, 100);
+        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 100, 100);
         enemies.add(boss);
     }
 

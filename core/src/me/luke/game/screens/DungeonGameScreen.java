@@ -52,7 +52,7 @@ public class DungeonGameScreen implements Screen {
         bgTexture = new Texture("background.png");
         playerRightTexture = new Texture("playerRight.png");
         playerLeftTexture = new Texture("playerLeft.png");
-        enemyTexture = new Texture("enemy.png");
+        enemyTexture = new Texture("newEnemyRight.png");
         xpTexture = new Texture("xp.png");
         bossTexture = new Texture("boss.png");
         chestTexture = new Texture("chest.png");
