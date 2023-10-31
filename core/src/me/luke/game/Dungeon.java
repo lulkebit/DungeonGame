@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import me.luke.game.screens.DungeonStartScreen;
+import me.luke.game.screens.StartScreen;
 
 public class Dungeon extends Game {
 
@@ -21,7 +21,7 @@ public class Dungeon extends Game {
         font = generator.generateFont(parameter); // font size 12 pixels
         generator.dispose();
         //font = new BitmapFont(); // use libGDX's default Arial font
-        this.setScreen(new DungeonStartScreen(this));
+        this.setScreen(new StartScreen(this));
     }
 
     public void render() {

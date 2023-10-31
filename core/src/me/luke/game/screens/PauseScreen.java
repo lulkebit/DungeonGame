@@ -7,13 +7,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.ScreenUtils;
 import me.luke.game.Dungeon;
 
-public class DungeonGameOverScreen implements Screen {
+public class PauseScreen implements Screen {
     final Dungeon game;
+    final GameScreen gameScreen;
 
     OrthographicCamera camera;
 
-    public DungeonGameOverScreen(final Dungeon game) {
+    public PauseScreen(final Dungeon game, final GameScreen gameScreen) {
         this.game = game;
+        this.gameScreen = gameScreen;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1920, 1080);
@@ -32,12 +34,11 @@ public class DungeonGameOverScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.font.draw(game.batch, "Congrats! You Died!", 1920f / 2f, 1080f / 2f);
-        game.font.draw(game.batch, "Click anywhere to continue", 1920f / 2f, 1080f / 2f - 25f);
+        game.font.draw(game.batch, "Pause Screen", 1920f / 2f, 1080f / 2f);
         game.batch.end();
 
         if (Gdx.input.isTouched() || Gdx.input.isKeyJustPressed(Input.Keys.ANY_KEY)) {
-            game.setScreen(new DungeonStartScreen(game));
+            game.setScreen(gameScreen);
             dispose();
         }
     }

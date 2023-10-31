@@ -1,26 +1,24 @@
 package me.luke.game.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.utils.ScreenUtils;
-import me.luke.game.Drop;
 import me.luke.game.Dungeon;
 
-public class DungeonStartScreen implements Screen {
+public class StartScreen implements Screen {
 
     final Dungeon game;
-    final DungeonGameScreen gameScreen;
+    final GameScreen gameScreen;
 
-    private CharSequence str = "Willkommen!";
-    private int screenWidth, screenHeight;
+    private final CharSequence str = "Willkommen!";
+    private final int screenWidth;
+    private final int screenHeight;
     OrthographicCamera camera;
 
-    public DungeonStartScreen(final Dungeon game) {
+    public StartScreen(final Dungeon game) {
         this.game = game;
-        gameScreen = new DungeonGameScreen(game);
+        gameScreen = new GameScreen(game);
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 1920, 1080);
@@ -39,7 +37,7 @@ public class DungeonStartScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         game.batch.begin();
-        game.font.draw(game.batch, str, screenWidth/2, screenHeight/2);
+        game.font.draw(game.batch, str, screenWidth / 2, screenHeight / 2);
         game.batch.end();
 
         if (Gdx.input.justTouched()) { // wechseln Sie zum neuen Bildschirm, wenn der Benutzer auf den Bildschirm tippt

@@ -10,17 +10,15 @@ import me.luke.game.manager.GameManager;
 
 import java.util.Random;
 
-public class DungeonLevelUpScreen implements Screen {
+public class LevelUpScreen implements Screen {
     final Dungeon game;
-    final DungeonGameScreen gameScreen;
+    final GameScreen gameScreen;
     OrthographicCamera camera;
-
-    private int[] array = new int[] { 0, 1, 2, 3, 4, 5, 6, 7 };
+    GameManager gameManager;
+    private final int[] array = new int[]{0, 1, 2, 3, 4, 5, 6, 7};
     private String upgrade;
 
-    GameManager gameManager;
-
-    public DungeonLevelUpScreen(final Dungeon game, final DungeonGameScreen gameScreen, GameManager gameManager) {
+    public LevelUpScreen(final Dungeon game, final GameScreen gameScreen, GameManager gameManager) {
         this.game = game;
         this.gameScreen = gameScreen;
         this.gameManager = gameManager;
@@ -29,6 +27,11 @@ public class DungeonLevelUpScreen implements Screen {
         camera.setToOrtho(false, 1920, 1080);
 
         randomUpgrade();
+    }
+
+    private static int getRandom(int[] array) {
+        int rnd = new Random().nextInt(array.length);
+        return array[rnd];
     }
 
     @Override
@@ -61,7 +64,7 @@ public class DungeonLevelUpScreen implements Screen {
     }
 
     private void randomUpgrade() {
-        if(gameManager.getPlayer().getBow().getLvl() < gameManager.getPlayer().getBow().getMaxLvl()) {
+        if (gameManager.getPlayer().getBow().getLvl() < gameManager.getPlayer().getBow().getMaxLvl()) {
             switch (getRandom(array)) {
                 case 0:
                     upgrade = "CritMulti";
@@ -109,12 +112,6 @@ public class DungeonLevelUpScreen implements Screen {
         }
 
     }
-
-    private static int getRandom(int[] array) {
-        int rnd = new Random().nextInt(array.length);
-        return array[rnd];
-    }
-
 
     @Override
     public void resize(int width, int height) {
