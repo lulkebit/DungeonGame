@@ -5,16 +5,15 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.*;
+import me.luke.game.entities.enemies.Enemy;
+import me.luke.game.entities.enemies.Spawner;
+import me.luke.game.entities.enemies.bosses.SlimeKing;
+import me.luke.game.entities.enemies.types.Slime;
 import me.luke.game.enums.Direction;
 import me.luke.game.manager.GameManager;
 import me.luke.game.weapons.ranged.bowAndArrow.Arrow;
@@ -32,9 +31,7 @@ public class DungeonGameScreen implements Screen {
     private final Texture bgTexture;
     private final Texture playerRightTexture;
     private final Texture playerLeftTexture;
-    private final Texture enemyTexture;
     private final Texture xpTexture;
-    private final Texture bossTexture;
     private final Texture chestTexture;
 
     private final GameManager gameManager;
@@ -52,9 +49,7 @@ public class DungeonGameScreen implements Screen {
         bgTexture = new Texture("background.png");
         playerRightTexture = new Texture("playerRight.png");
         playerLeftTexture = new Texture("playerLeft.png");
-        enemyTexture = new Texture("newEnemyRight.png");
         xpTexture = new Texture("xp.png");
-        bossTexture = new Texture("boss.png");
         chestTexture = new Texture("chest.png");
 
 
@@ -132,10 +127,10 @@ public class DungeonGameScreen implements Screen {
         }
 
         for(Enemy enemy : spawner.getEnemies()) {
-            if(enemy.getClass() == Enemy.class)
-                game.batch.draw(enemyTexture, enemy.getX(), enemy.getY());
-            else if(enemy.getClass() == Boss.class)
-                game.batch.draw(bossTexture, enemy.getX(), enemy.getY());
+            if(enemy.getClass() == Slime.class)
+                game.batch.draw(enemy.getTexture(), enemy.getX(), enemy.getY());
+            else if(enemy.getClass() == SlimeKing.class)
+                game.batch.draw(enemy.getTexture(), enemy.getX(), enemy.getY());
         }
 
         game.font.draw(game.batch, "HP: " + (int) player.getHp(), player.getX(), player.getY() + player.getHeight() + 20);
@@ -202,9 +197,7 @@ public class DungeonGameScreen implements Screen {
         playerRightTexture.dispose();
         playerLeftTexture.dispose();
         bgTexture.dispose();
-        enemyTexture.dispose();
         xpTexture.dispose();
-        bossTexture.dispose();
         chestTexture.dispose();
     }
 

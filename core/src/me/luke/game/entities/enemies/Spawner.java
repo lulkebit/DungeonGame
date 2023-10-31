@@ -1,4 +1,4 @@
-package me.luke.game.entities;
+package me.luke.game.entities.enemies;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import me.luke.game.entities.Player;
+import me.luke.game.entities.enemies.bosses.SlimeKing;
+import me.luke.game.entities.enemies.types.Slime;
 
 import java.util.Iterator;
 
@@ -49,7 +52,7 @@ public class Spawner {
 
     public void spawnEnemy() {
         if(enemyCount < maxEnemies) {
-            Enemy enemy = new Enemy(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 24f, 31f, 80, 10 + (int) wave);
+            Slime enemy = new Slime(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 24f, 31f, 80, 10, 10 + (int) wave);
             enemies.add(enemy);
             enemyCount++;
             lastSpawnTime = TimeUtils.nanoTime();
@@ -57,7 +60,7 @@ public class Spawner {
     }
 
     public void spawnBoss() {
-        Boss boss = new Boss(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 60, 100 + (int) wave * 2);
+        SlimeKing boss = new SlimeKing(MathUtils.random(1,2)==1?0f:1920f, MathUtils.random(0, 1080-64), 62, 64, 60, 100, 100 + (int) wave * 2);
         enemies.add(boss);
     }
 

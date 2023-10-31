@@ -1,14 +1,13 @@
 package me.luke.game.manager;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import me.luke.game.Dungeon;
 import me.luke.game.entities.*;
-import me.luke.game.screens.DungeonChestScreen;
-import me.luke.game.screens.DungeonGameOverScreen;
-import me.luke.game.screens.DungeonPauseScreen;
+import me.luke.game.entities.enemies.Enemy;
+import me.luke.game.entities.enemies.Spawner;
+import me.luke.game.entities.enemies.bosses.SlimeKing;
+import me.luke.game.entities.enemies.types.Slime;
 import me.luke.game.weapons.ranged.bowAndArrow.Arrow;
 import me.luke.game.weapons.ranged.bowAndArrow.Bow;
 
@@ -86,9 +85,9 @@ public class GameManager {
                 enemy.setHp((int) (randObj.nextFloat() <= bow.getCritChance() ? enemy.getHp() - bow.getBaseDmg() * bow.getCritMulti() : enemy.getHp() - bow.getBaseDmg()));
 
                 if(enemy.getHp() <= 0) {
-                    if(enemy.getClass() == Boss.class) {
+                    if(enemy.getClass() == SlimeKing.class) {
                         chests.add(new Chest(enemy.getX(), enemy.getY(), 18, 14));
-                    } else if(enemy.getClass() == Enemy.class) {
+                    } else if(enemy.getClass() == Slime.class) {
                         xpOrbs.add(new XpOrb(enemy.getX(), enemy.getY(), enemy.getDroppedXp()));
                         spawner.setEnemyCount(spawner.getEnemyCount() - 1);
                     }
